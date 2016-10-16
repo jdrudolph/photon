@@ -16,9 +16,9 @@ RUN wget http://cs.tau.ac.il/~jandanielr/db.tar.gz \
   && rm db.tar.gz
 
 # INSTALL DEPENDENCIES
-COPY conda_requirements.txt .
+COPY conda_requirements.txt conda_requirements.txt
 RUN conda install --yes --file conda_requirements.txt
-COPY pip_requirements.txt .
+COPY pip_requirements.txt pip_requirements.txt
 RUN pip install -r pip_requirements.txt
 
 COPY . photon
