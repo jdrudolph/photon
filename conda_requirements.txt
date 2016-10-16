@@ -1,0 +1,11 @@
+Flask
+networkx
+nose
+numpy
+pandas
+redis
+scipy
+seaborn
+statsmodels
+scikit-learn
+requests

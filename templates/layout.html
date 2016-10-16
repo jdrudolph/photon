@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='icon.png') }}">
+  <title>PHOTON</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+  <script type="text/javascript" async
+src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+  </script>
+  <object id="logo" data="{{ url_for('static', filename='photon.svg') }}" type="image/svg+xml"></object>
+  "PHOsphoproteomic dissecTiOn using Networks"
+</head>
+<body>
+{% block body %}{% endblock %}
+</body>
+</html>

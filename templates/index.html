@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block body %}
+  <form action="submit" method="post" enctype="multipart/form-data">
+    <fieldset>
+      <legend>Submit Job:</legend>
+      <div>Data: <input required type="file" name="data"/></div>
+      <button>Submit</button>
+      <p>
+      {% for k,v in parameters.items() %}
+      <fieldset>
+        <legend>{{ descriptions[k] }}:</legend>
+        {% for _k, _v in v.items() %}
+        <div>{{ descriptions[_k] }}: <input required type="number" name={{ k + ':' + _k }} value={{ _v }}></div>
+        {% endfor %}
+      </fieldset>
+      {% endfor %}
+      </p>
+  </form>
+  <p>
+  Example data can be downloaded <a href={{ url_for('static', filename='data.csv') }}>here</a>. The example dataset features MCF7 cells after stimulation with EGF (anchor = 1950).
+  </p>
+{% endblock %}

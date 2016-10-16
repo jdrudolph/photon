@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.22.1/js/jquery.tablesorter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js"></script>
+    <script>
+function save_svg() {
+  var svg = document.getElementById('svg').getElementsByTagName('svg')[0]
+  saveAs(
+      new Blob(
+        [(new XMLSerializer).serializeToString(svg)]
+        , {type: "application/xhtml+xml;charset=" + document.characterSet}
+        )
+      , "graph.svg"
+      );
+}
+    </script>
+    <style>
+        div.tooltip {   
+          position: absolute;           
+          text-align: center;           
+          padding: 2px;             
+          font: 12px sans-serif;        
+          background: lightsteelblue;   
+          border: 0px;      
+          border-radius: 8px;           
+          pointer-events: none;         
+        }
+
+        table {
+          margin: auto;
+        }
+    </style>
+</head>
+<body>
+  <div id="svg"></div>
+  <div id="save">
+    <button onclick="save_svg()">save svg</button>
+  </div>
+  <input type="submit" value="download results"
+                       onclick="window.location='/download/{{ task_id }}';" />
+<script type="text/javascript">
+    var graph = {{ graph }},
+    width = 2000,
+    height = 2000,
+    radius = 15,
+    colorbrewer_PiYG10 = ["#8e0152", "#c51b7d", "#de77ae", "#f1b6da", "#fde0ef", "#e6f5d0", "#b8e186", "#7fbc41", "#4d9221", "#276419"]
+    color = d3.scale.quantize().range(colorbrewer_PiYG10).domain([3, -3])
+
+    var pie = d3.layout.pie()
+        .sort(null)
+        .value(function(d) { return 1; });
+
+    var arc = d3.svg.arc()
+        .outerRadius(function(d) { return d.data.NUM == 0 ? radius / 2 : radius;})
+        .innerRadius(0);
+
+    var svg = d3.select("#svg").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    var force = d3.layout.force()
+        .charge(-120)
+        .linkDistance(4 * radius)
+        .size([width, height]);
+
+    force.nodes(graph.nodes)
+         .links(graph.links)
+         .start();
+
+    var link = svg.selectAll(".link")
+        .data(graph.links)
+        .enter().append("line")
+        .attr("class", "link")
+        .style({
+            "stroke": "#808080",
+            "stroke-opacity": ".6"
+        });
+
+    var drag = d3.behavior.drag()
+      .on("drag", dragmove);
+
+    function dragmove(d) {
+      var x = d3.event.x;
+      var y = d3.event.y;
+      d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
+    } 
+
+    var columns = ['AA', 'POS', 'AVG']
+
+    var node = svg.selectAll(".node")
+        .data(graph.nodes)
+        .enter().append("g")
+        .attr("class", function(d) { return "node " + d.type; })
+        .style({
+            "stroke": "#fff",
+            "stroke-width": "1.5px"
+        })
+        .on("mouseover", function(d) {
+            div.transition()        
+                .duration(200)      
+                .style("opacity", .9);
+
+            // clear everything
+            var table = div.html(d.name + " [" + d.type + "]")
+                .style("left", (d3.event.pageX) + "px")     
+                .style("top", (d3.event.pageY - 28) + "px")
+                .append('table')
+                .attr("class", "tablesorter")
+                .attr("id", "mytable");
+            var thead = table.append('thead'),
+                tbody = table.append('tbody');
+
+            // header row
+            thead.append('tr')
+                .selectAll('th')
+                .data(columns)
+                .enter()
+                .append('th')
+                .text(function (col) { return col; });
+
+            // row for each data object
+            var rows = tbody.selectAll('tr')
+                .data(d.residues)
+                .enter()
+                .append('tr')
+
+            // fill cells with content
+            var cells = rows.selectAll('td')
+                .data(function(row) {
+                    return columns.map(function(column) {
+                      value = row[column]
+                      if (column == 'AVG') {
+                        value = value.toFixed(2);
+                      }
+                      return { column : column, value : value }
+                      })
+                    })
+                .enter()
+                .append('td')
+                .html(function(d) { return d.value; });
+
+            $('#mytable').tablesorter({sortList : [[1,0]]});
+        })
+        .on("mouseout", function(d) {
+            div.transition()
+                .duration(500)
+                .style("opacity", 0)
+        })
+   
+    var pies = node.selectAll("path")
+        .data(function(d, i) {return pie(d.residues); })
+        .enter()
+        .append("svg:path")
+        .attr("d", arc)
+        .attr("stroke-width", function(d) { return Math.min(2, 2 / d.data.NUM);})
+        .attr("fill", function(d, i) { return d.data.NUM == 0 ? "lightgrey" : color(d.data.AVG); });
+    
+    node.append("text")
+        .text(function(d) { return d.name })
+        .attr("dy", function(d) { return d.NUM == 0 ? -radius / 4 : - radius / 2;})
+        .attr("dx", function(d) { return d.NUM == 0 ? radius / 2 : radius;})
+        .attr("class", "label shadow")
+        .style({
+          "stroke": "white",
+          "font-size" : "6px",
+          "stroke-width" : "1.5px"
+        })
+    
+    node.append("text")
+        .text(function(d) { return d.name })
+        .attr("dy", function(d) { return d.NUM == 0 ? -radius / 4 : - radius / 2;})
+        .attr("dx", function(d) { return d.NUM == 0 ? radius / 2 : radius;})
+        .attr("class", "label")
+        .style({
+          "stroke": "black",
+          "font-size" : "6px",
+          "stroke-width" : "0.3px"
+        })
+
+    var div = d3.select("body").append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0)
+
+
+    force.on("tick", function() {
+        link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+        node.attr("x", function(d) { return d.x; })
+            .attr("y", function(d) { return d.y; })
+            .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"});
+    });
+    node.call(force.drag)
+</script>
+</body>
+</html>

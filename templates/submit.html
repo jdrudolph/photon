@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block body %}
+working on {{ task_id }}
+<script>
+// I should do this via session?!
+var task_id = "{{ task_id }}"
+function get_status() {
+  $.getJSON('/status/'.concat(task_id),
+    function(data) {
+      console.log(data);
+      if (data.state == 'PENDING') {
+        setTimeout(get_status, 500);
+      }
+      else if (data.state == 'STARTED') {
+        setTimeout(get_status, 500);
+      }
+      else if (data.state == 'SUCCESS') {
+        window.location.replace('/get/'.concat(task_id))
+      }
+      else {
+        alert('Failed to perform task')
+      }
+    })
+}
+get_status()
+</script>
+{% endblock %}

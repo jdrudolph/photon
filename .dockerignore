@@ -1,0 +1,9 @@
+analysis
+db
+work
+redis-stable
+docs
+
+*.pyc
+*.pkl
+.*.pkl

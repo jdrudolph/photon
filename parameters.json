@@ -1,0 +1,19 @@
+{
+  "activity" : {
+    "min_size" : 4,
+    "permutations" : 10000
+  },
+  "anat" : {
+    "alpha" : 0.25,
+    "anchor" : -1
+  },
+  "go" : {
+    "max_category_size" : 500,
+    "min_category_size" : 5,
+    "max_category_depth" : 10
+  },
+  "ppi-network" : {
+    "confidence" : 0.5,
+    "degree_threshold" : 150
+  }
+}
