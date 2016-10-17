@@ -10,7 +10,7 @@ found on the docker [website](https://docs.docker.com/engine/installation/).
 
 First open the `Docker Quickstart Terminal`. After initialization (can take some time),
 denote the IP address of docker (under the whale image).
-3. Run PHOTON
+Now you can run PHOTON by entering:
 
 ```bash
 docker run -d -p 5000:5000 jdrudolph/photon
