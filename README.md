@@ -28,7 +28,7 @@ Open a Powershell (terminal in linux) and run:
 docker run -d -p 5000:5000 jdrudolph/photon
 ```
 
-Now you can access PHOTON from your [browser](localhost:5000).
+Now you can access PHOTON from your [browser](http://localhost:5000).
 
 ## Native Linux (Experts)
 
@@ -48,8 +48,18 @@ Lookup the name of the container (last column) and stop it using
 docker stop name_of_container
 ```
 
+# Updating PHOTON
+
+New versions of docker can be downloaded by running
+
+```bash
+docker pull jdrudolph/photon
+```
+
+before issuing the `run` command as shown above.
+
 # Troubleshooting
-Please open an issue [here](github.com/jdrudolph/photon/issues), or
+Please open an issue [here](https://github.com/jdrudolph/photon/issues), or
 contact me directly if you have issues with installing or using PHOTON.
 
 # Licence
