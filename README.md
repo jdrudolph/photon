@@ -1,6 +1,60 @@
 # Installation
 
-https://docs.docker.com/engine/installation/
+PHOTON runs inside a 'container' and therefore requires docker to run across all platforms.
+General information regarding the installation of docker can be
+found on the docker [website](https://docs.docker.com/engine/installation/).
+
+# Running PHOTON
+
+## Docker Toolbox (Windows, Mac)
+
+First open the `Docker Quickstart Terminal`. After initialization (can take some time),
+denote the IP address of docker (under the whale image).
+3. Run PHOTON
+
+```bash
+docker run -d -p 5000:5000 jdrudolph/photon
+```
+
+Now you can access PHOTON from your browser under the IP address
+of docker followed by colon and 5000. For example `192.168.0.100:5000`.
+Alternatively you can lookup the IP address using `docker-machine ip default`.
+
+## Docker for Windows / Linux
+
+Open a Powershell (terminal in linux) and run:
+
+```bash
+docker run -d -p 5000:5000 jdrudolph/photon
+```
+
+Now you can access PHOTON from your [browser](localhost:5000).
+
+## Native Linux (Experts)
+
+Consult the `Dockerfile` on how to run PHOTON on Linux natively.
+
+# Stopping PHOTON
+
+First list all running containers:
+
+```bash
+docker ps
+```
+
+Lookup the name of the container (last column) and stop it using
+
+```bash
+docker stop name_of_container
+```
+
+# Troubleshooting
+Please open an issue [here](github.com/jdrudolph/photon/issues), or
+contact me directly if you have issues with installing or using PHOTON.
+
+# Licence
+If the current licencing (see `LICENCE.txt`) does not suit your needs,
+please contacte me for alternative licencing options.
 
 # PHOTON data format example
 

@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block body %}
-working on {{ task_id }}
+<p>
+working on job with id:{{ task_id }}.
+</p>
 <script>
 // I should do this via session?!
 var task_id = "{{ task_id }}"
