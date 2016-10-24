@@ -19,6 +19,8 @@ import phos.algo.functional_sites as functional_sites
 def _run(task_id, data, parameters):
     exp = pd.read_csv(data)
     columns = ['GeneID', 'Amino.Acid', 'Position', 'avg', 'Symbol']
+    if len(exp.columns) < len(columns):
+	    raise ValueError('Found {} columns but expected {}. Please check that the input format is correct!'.format(len(exp.columns), len(columns)))
     if not (exp.columns == columns).all():
         raise ValueError('Column names are not {}'.format(columns))
     if not exp['GeneID'].dtypes == np.int:

@@ -33,9 +33,4 @@ ENV C_FORCE_ROOT TRUE
 
 EXPOSE 5000
 
-CMD \
-  /redis-stable/src/redis-server /photon/redis.conf && \
-  cd /photon/phos && \
-  celery worker -A app.celery --detach && \
-  cd / && \
-  /photon/phos/app.py
+ENTRYPOINT ["./run.sh"]

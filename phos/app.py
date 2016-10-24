@@ -69,7 +69,8 @@ def download_result(task_id):
 @app.route('/status/<task_id>')
 def status(task_id):
     task = phos_task.AsyncResult(task_id)
-    return jsonify({'state' : task.state})
+    info = str(task.info) if task.state == 'FAILURE' else ''
+    return jsonify({'state' : task.state, 'info': info})
 
 if __name__ == '__main__':
     import argparse

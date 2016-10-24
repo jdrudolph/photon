@@ -20,7 +20,8 @@ function get_status() {
         window.location.replace('/get/'.concat(task_id))
       }
       else {
-        alert('Failed to perform task')
+        alert(data.info)
+	window.location.replace('/')
       }
     })
 }
