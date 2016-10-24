@@ -2,6 +2,7 @@
 import os
 from os.path import join
 import pandas as pd
+import numpy as np
 import json
 
 import phos.util
@@ -17,6 +18,11 @@ import phos.algo.functional_sites as functional_sites
 
 def _run(task_id, data, parameters):
     exp = pd.read_csv(data)
+    columns = ['GeneID', 'Amino.Acid', 'Position', 'avg', 'Symbol']
+    if not (exp.columns == columns).all():
+        raise ValueError('Column names are not {}'.format(columns))
+    if not exp['GeneID'].dtypes == np.int:
+        raise ValueError('GeneID could not be parsed as integer, make sure the column does not contain "NaN" or ";"')
     print('reading done')
     network_undirected = networker.load(**parameters['ppi-network'])
     network = networker.to_directed(network_undirected)

@@ -2,6 +2,8 @@ db
 work
 example
 __pycache__
+
+*.egg-info
 *.svg
 *.png
 *.pdf
