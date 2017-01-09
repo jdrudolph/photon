@@ -1,3 +1,17 @@
+# Elucidation of Signaling Pathways from Large-Scale Phosphoproteomic Data Using Protein Interaction Networks
+
+Phosphoproteomic experiments typically identify sites within a protein that are differentially phosphorylated between two or more cell states. However, the interpretation of these data is hampered by the lack of methods that can translate site-specific information into global maps of active proteins and signaling networks, especially as the phosphoproteome is often undersampled. Here, we describe PHOTON, a method for interpreting phosphorylation data within their signaling context, as captured by protein-protein interaction networks, to identify active proteins and pathways and pinpoint functional phosphosites. We apply PHOTON to interpret existing and novel phosphoproteomic datasets related to epidermal growth factor and insulin responses. PHOTON substantially outperforms the widely used cutoff approach, providing highly reproducible predictions that are more in line with current biological knowledge. Altogether, PHOTON overcomes the fundamental challenge of delineating signaling pathways from large-scale phosphoproteomic data, thereby enabling translation of environmental cues to downstream cellular responses.
+
+[Pubmed link](https://www.ncbi.nlm.nih.gov/pubmed/28009266)
+
+# Output description
+A zip archive containing several output tables can be downloaded from the results page of PHOTON.
+
+1. `subnet.csv`: edges of the reconstructed signaling network. This is a sub-network of the input network (which is located at `/db/anat/H_sapiens.net`). The `subnet.csv` file can be e.g. imported into Cytoscape for further analysis.
+2. `scores.csv`: signaling functionality scores devised by PHOTON. The 'Significant' column allows for easy filtering of the table. The other columns provide more detail on each step of the algorithm, i.e. calculating an empirical score, obtaining p-values, and finally FDR-corrected q-values.
+3. `go_scores.csv`: details all GO annotation enrichment results for the reconstructed network. Filtering for the 'rejected' column (=1) will yield all sign. enriched categories. The naming of the other columns follows the convention of the [statistical test](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.hypergeom.html) used.
+4. `predictions.csv`: contains information regarding the functional phosphorylation site prediction. The '[proba](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression.predict_proba)' column is the prediction score for each site. If the phosphorylation site was part of the training set the 'label' column will be 'TRUE'. One should take special care when the training set was small, i.e. few sites with 'label' set to TRUE are in the data set.
+
 # Installation
 
 PHOTON runs inside a 'container' and therefore requires docker to run across all platforms.
