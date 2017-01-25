@@ -12,6 +12,11 @@ A zip archive containing several output tables can be downloaded from the result
 3. `go_scores.csv`: details all GO annotation enrichment results for the reconstructed network. Filtering for the 'rejected' column (=1) will yield all sign. enriched categories. The naming of the other columns follows the convention of the [statistical test](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.hypergeom.html) used.
 4. `predictions.csv`: contains information regarding the functional phosphorylation site prediction. The '[proba](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression.predict_proba)' column is the prediction score for each site. If the phosphorylation site was part of the training set the 'label' column will be 'TRUE'. One should take special care when the training set was small, i.e. few sites with 'label' set to TRUE are in the data set.
 
+## My result graph contains only a sigle node '-1'
+Sometimes PHOTON will not yield any results. Known technical sources of failure are:
+
+1. The ANAT service is down. PHOTON relies on the [ANAT web server](http://www.cs.tau.ac.il/~bnet/ANAT/) which can be down for various reasons. Before reporting an error with PHOTON, please confirm that the Cytoscape plugin for ANAT is working as expected. Please note that you might still download the resulting activity scores derived by PHOTON.
+
 # Installation
 
 PHOTON runs inside a 'container' and therefore requires docker to run across all platforms.

@@ -54,7 +54,7 @@ def draw(exp, scores, network, task_id, anchor=None):
         G.node[n]['residues'] = node_attributes.get(n, [{'NUM' : 0}])
         G.node[n]['type'] = 'terminal' if n in terminals else 'connector'
         G.node[n]['name'] = gene_name.get(n, n)
-    if anchor is not None:
+    if anchor in G and anchor is not None:
         G.node[anchor]['type'] = 'anchor'
     
     graph = json.dumps(json_graph.node_link_data(G))
