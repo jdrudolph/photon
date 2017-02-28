@@ -3,6 +3,10 @@
 <p>
 working on job with id:{{ task_id }}.
 </p>
+<p>
+Progress message: <span id=message></message>
+</p>
+
 <script>
 // I should do this via session?!
 var task_id = "{{ task_id }}"
@@ -11,9 +15,11 @@ function get_status() {
     function(data) {
       console.log(data);
       if (data.state == 'PENDING') {
+	$('#message').text(data.message);
         setTimeout(get_status, 500);
       }
       else if (data.state == 'STARTED') {
+	$('#message').text("started");
         setTimeout(get_status, 500);
       }
       else if (data.state == 'SUCCESS') {

@@ -22,10 +22,28 @@ celery.conf.update(app.config)
 
 import phos.pipeline
 
+import json
+import redis
+def task_key(task_id):
+    return 'task:{}:progress'.format(task_id)
+
+redis_db = redis.StrictRedis()
+def make_set_progress(task_id):
+    def set_progress(message):
+        redis_db.set(task_key(task_id), json.dumps(message))
+    return set_progress
+
+def get_progress(task_id):
+    raw_message = redis_db.get(task_key(task_id))
+    if not raw_message:
+        return "no message found"
+    message = json.loads(raw_message.decode('utf-8'))
+    return message
+
 @celery.task()
 def phos_task(task_id, data, _parameters):
     phos.util.deep_update(parameters, _parameters)
-    return phos.pipeline.run(task_id, data, parameters)
+    return phos.pipeline.run(task_id, data, parameters, set_progress = make_set_progress(task_id))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -70,7 +88,9 @@ def download_result(task_id):
 def status(task_id):
     task = phos_task.AsyncResult(task_id)
     info = str(task.info) if task.state == 'FAILURE' else ''
-    return jsonify({'state' : task.state, 'info': info})
+    message = get_progress(task_id)
+    print('status info', info)
+    return jsonify({'state' : task.state, 'info': info, 'message' : message})
 
 if __name__ == '__main__':
     import argparse

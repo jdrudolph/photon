@@ -16,7 +16,10 @@ import phos.algo.activity as activity
 import phos.algo.subnetwork as subnetwork
 import phos.algo.functional_sites as functional_sites
 
-def _run(task_id, data, parameters):
+def print_progress(message):
+    print('progress:', message)
+
+def _run(task_id, data, parameters, set_progress=print_progress):
     exp = pd.read_csv(data)
     columns = ['GeneID', 'Amino.Acid', 'Position', 'avg', 'Symbol']
     if len(exp.columns) < len(columns):
@@ -25,24 +28,24 @@ def _run(task_id, data, parameters):
         raise ValueError('Column names are not {}'.format(columns))
     if not exp['GeneID'].dtypes == np.int:
         raise ValueError('GeneID could not be parsed as integer, make sure the column does not contain "NaN" or ";"')
-    print('reading done')
+    set_progress('1/5 read data file, constructing network...')
     network_undirected = networker.load(**parameters['ppi-network'])
     network = networker.to_directed(network_undirected)
-    print('network done')
+    set_progress('2/5 constructed the network, calculating functionality scores...')
     scores = activity.empiric(exp, network, **parameters['activity'])
-    print('scores done')
+    set_progress('3/5 calculated scores, infering subnetwork using ANAT...')
     subnet, go_scores = subnetwork.inference(exp, scores,
             network_undirected, task_id=task_id, **parameters)
-    print('network done')
+    set_progress('4/5 inferred subnetwork, making functional site predictions')
     predictions = functional_sites.predict_functional_sites(exp, scores,
             **parameters)
-    print('predictions done')
+    set_progress('5/5 all done')
     return exp, scores, subnet, go_scores, predictions
 
-def run(task_id, data, parameters):
+def run(task_id, data, parameters, set_progress=print_progress):
     if parameters['anat'].get('anchor', None) < 1:
         del parameters['anat']['anchor']
-    exp, scores, subnet, go_scores, predictions = _run(task_id, data, parameters)
+    exp, scores, subnet, go_scores, predictions = _run(task_id, data, parameters, set_progress)
     with open(join(WORK_DIR, task_id, 'parameters.json'), 'w') as f:
         json.dump(parameters, f, indent=1)
     scores.to_csv(join(WORK_DIR, task_id, 'scores.csv'), index=False)
@@ -57,7 +60,7 @@ def run(task_id, data, parameters):
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser(description='PHOTON: PHOsphoproteomics dissecTiOn using Networks')
+    parser = argparse.ArgumentParser(description='PHOTON: PHOsphoproteomic dissecTiOn using Networks')
     parser.add_argument('data',
             help='data file')
     parser.add_argument('task_id', type=str, default=phos.util.uuid(),
