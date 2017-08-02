@@ -17,6 +17,14 @@ Sometimes PHOTON will not yield any results. Known technical sources of failure 
 
 1. The ANAT service is down. PHOTON relies on the [ANAT web server](http://www.cs.tau.ac.il/~bnet/ANAT/) which can be down for various reasons. Before reporting an error with PHOTON, please confirm that the Cytoscape plugin for ANAT is working as expected. Please note that you might still download the resulting activity scores derived by PHOTON.
 
+## Common errors when running PHOTON
+
+1. Uploading a data file which is not `ASCII` encoded might yield errors such as
+    
+        'utf-8' codec can't decode byte 0xa0 in position 0: invalid start byte
+        
+   Converting the file to `ASCII` will fix this issue.
+    
 # Installation
 
 PHOTON runs inside a 'container' and therefore requires docker to run across all platforms.
