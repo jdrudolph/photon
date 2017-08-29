@@ -24,6 +24,18 @@ Sometimes PHOTON will not yield any results. Known technical sources of failure 
         'utf-8' codec can't decode byte 0xa0 in position 0: invalid start byte
         
    Converting the file to `ASCII` will fix this issue.
+2. There is a popup with a long error message similar to
+
+        <ns2:confidence>0.6912981534952782</ns2:confidence>
+        <ns2:fromNodeId>473</ns2:fromNodeId>
+        <ns2:toNodeId>126961</ns2:toNodeId>
+        </ns2:edgesData>
+        <ns2:edgesData>
+        ...
+        
+    This error messages is due to the [ANAT web server](http://www.cs.tau.ac.il/~bnet/ANAT/) not being available.
+    Please confirm that the Cytoscape plugin for ANAT is working as expected before reporting an error for PHOTON.
+    Please contact me or the authors of ANAT in case of errors.
     
 # Installation
 
