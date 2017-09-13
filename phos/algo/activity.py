@@ -20,6 +20,8 @@ def run_one_sample_regular_weights(exp, network, beta=0):
     """
     df = (pd.merge(exp, network, left_on='GeneID', right_on='sub')
             .rename(columns={'avg' : 'x', 'confidence' : 'w'}))
+    if df.shape[0] == 0:
+	    raise ValueError("None of the 'GeneID' could be matched to the network. Only human entrez GeneIDs are supported.")
     df['wx'] = df['w'] * df['x']
     df['w(x^2)'] = df['w'] * np.power(df['x'], 2)
     df['w^2'] = np.power(df['w'], 2)
