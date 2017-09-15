@@ -1,10 +1,11 @@
 from phos.defaults import db
 import pandas as pd
 
-def load(confidence, degree_threshold):
+def load(confidence, degree_threshold, ppi_network = None):
     """ read the network table from file
     filter for low confidence edges and high-degree nodes """
-    _anat = pd.read_table(db['ppi-network'],
+    ppi_network = db['ppi-network'] if ppi_network is None else ppi_network
+    _anat = pd.read_table(ppi_network,
             names=['kin', 'sub', 'confidence', 'd'])
     anat = _anat[_anat['confidence'] > confidence]
     # Use degree cutoff to remove high-degree nodes
