@@ -5,11 +5,11 @@ import numpy as np
 import perseuspy.parameters as params
 
 try:
-	import phos.data.network as networker
-	import phos.algo.activity as activity
+    import phos.data.network as networker
+    import phos.algo.activity as activity
 except ImportError:
-	print("Could not import the photon python package")
-	sys.exit(1)
+    print("Could not import the photon python package")
+    sys.exit(1)
 
 if __name__ == '__main__':
     import argparse
@@ -31,12 +31,13 @@ if __name__ == '__main__':
                 'permutations' : params.intParam(paramFile, 'Number of permutations')
                 }}
     data = pd.read_perseus(args.infile)
-    data_columns = [data.columns[i] for i, t in takewhile(lambda tup: tup[1] is np.dtype('float64'), enumerate(data.dtypes))]
+    column_names = data.columns.get_level_values('Column Name') 
+    data_columns = [column_names[i] for i, t in takewhile(lambda tup: tup[1] is np.dtype('float64'), enumerate(data.dtypes))]
     geneid_column = params.singleChoiceParam(paramFile, 'GeneID')
     if type(geneid_column) is int and geneid_column < 0:
         print("GeneID column was not chosen")
         sys.exit(1)
-    data = data.dropna(subset=[geneid_column])
+    data = data[pd.notnull(data[geneid_column])]
     try:
         data[geneid_column] = data[geneid_column].astype(int)
     except ValueError:
@@ -58,21 +59,28 @@ if __name__ == '__main__':
         print('calculating scores for', data_column)
         rename[data_column] = 'avg'
         exp = data[[geneid_column, aa_column, pos_column, data_column]].rename(columns = rename).dropna()
+        exp.columns = exp.columns.get_level_values('Column Name')
         network_undirected = networker.load(**parameters['ppi-network'])
         network = networker.to_directed(network_undirected)
         scores = activity.empiric(exp, network, **parameters['activity'])
         scores['Column Name'] = data_column
         results.append(scores)
     _result = pd.concat(results)
-    score_empiric = _result.pivot_table('score_empiric', 'GeneID', 'Column Name')
-    significant = (_result
-            .pivot_table('Significant', 'GeneID', 'Column Name')
-            .rename(columns = lambda x : '{} Significant'.format(x))
-            .fillna('Insufficient data')
-            .apply(lambda col: col.astype('category')))
-    result = score_empiric.join(significant).reset_index()
+    result = _result.pivot_table('score_empiric', 'GeneID', 'Column Name')
+    for num_column in ['t', 'p_greater', 'p_lesser', 'p_twosided', 'q_greater', 'q_lesser', 'q_twosided']:
+        values = (_result
+                .pivot_table(num_column, 'GeneID', 'Column Name')
+                .rename(columns = lambda x : '{} {}'.format(x, num_column))
+                .apply(lambda col: col.astype(float)))
+        result = result.join(values)
+    for cat_column in ['rej_greater', 'rej_lesser', 'rej_twosided', 'Significant']:
+        significant = (_result
+                .pivot_table(cat_column, 'GeneID', 'Column Name')
+                .rename(columns = lambda x : '{} {}'.format(x, cat_column))
+                .fillna('Insufficient data')
+                .apply(lambda col: col.astype('category')))
+        result = result.join(significant)
+    result = result.reset_index();
     result['GeneID'] = result['GeneID'].astype(int).astype(str)
-	reverse_rename = {v: k for k,v in rename}
-	output = result.rename(columns: reverse_rename).merge(data.drop(data_columns))
     print('writing results')
     result.to_perseus(args.outfile, main_columns=data_columns)

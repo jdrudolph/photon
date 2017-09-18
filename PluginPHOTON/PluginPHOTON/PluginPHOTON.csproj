@@ -30,11 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BaseLib, Version=1.6.0.307, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BaseLib.1.6.0.307\lib\net45\BaseLib.dll</HintPath>
+    <Reference Include="BaseLib, Version=1.6.0.308, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BaseLib.1.6.0.308\lib\net45\BaseLib.dll</HintPath>
     </Reference>
-    <Reference Include="BaseLibS, Version=1.6.0.307, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BaseLibS.1.6.0.307\lib\net45\BaseLibS.dll</HintPath>
+    <Reference Include="BaseLibS, Version=1.6.0.308, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BaseLibS.1.6.0.308\lib\net45\BaseLibS.dll</HintPath>
     </Reference>
     <Reference Include="PerseusApi, Version=1.6.0.221, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\PerseusApi.1.6.0.221\lib\net45\PerseusApi.dll</HintPath>
@@ -60,11 +60,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="HomologyMapping.cs" />
     <Compile Include="SignalingScoreProcessing.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Resources\calculate_scores.py" />
+    <None Include="Resources\homology_mapping.py" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -77,7 +79,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetDir)$(TargetFileName) C:\Users\rudolph\Desktop\USB-Stick\software\Perseus\bin\$(TargetFileName)
-copy $(SolutionDir)..\db\anat\H_sapiens.net C:\Users\rudolph\Desktop\USB-Stick\software\Perseus\bin\conf\H_sapiens.net</PostBuildEvent>
+    <PostBuildEvent>copy $(TargetDir)$(TargetFileName) C:\Users\rudolph\Desktop\Perseus\bin\$(TargetFileName)
+copy $(SolutionDir)..\db\anat\H_sapiens.net C:\Users\rudolph\Desktop\Perseus\bin\conf\H_sapiens.net</PostBuildEvent>
   </PropertyGroup>
 </Project>
