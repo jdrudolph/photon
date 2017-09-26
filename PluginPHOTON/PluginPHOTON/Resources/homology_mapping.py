@@ -19,13 +19,18 @@ if __name__ == '__main__':
     if type(geneid_column) is int and geneid_column < 0:
         print("GeneID column was not chosen")
         sys.exit(1)
+    mapping_direction = params.singleChoiceParam(paramFile, 'Map from')
+    known_mappings = {'human to mouse' : ('9606', '10090', 'mouse'), 'mouse to human': ('10090', '9606', 'human')}
+    if mapping_direction not in known_mappings:
+        print('Unknown mapping direction')
+        sys.exit(1)
     ids = data[geneid_column].fillna('').astype(str)
     flat_ids = (pd.DataFrame([{i: v for i,v in enumerate(x)} for x in ids.str.split(';').tolist()], index=ids.index)
         .stack()
         .reset_index(1, drop=True)
         .reset_index()
-        .rename(columns = {0 : 'GeneID'}))
-    flat_ids = flat_ids[flat_ids['GeneID'] != '']
+        .rename(columns = {0 : geneid_column}))
+    flat_ids = flat_ids[flat_ids[geneid_column] != '']
     import urllib.request
     try:
         print('Downloading homology mapping')
@@ -35,12 +40,16 @@ if __name__ == '__main__':
         print(ex)
     print('Mapping identifiers')
     hom_rpt = pd.read_table(tmpfile, dtype=str)
-    mouse = hom_rpt[hom_rpt['NCBI Taxon ID'] == '10090'][['HomoloGene ID', 'EntrezGene ID']].rename(columns = {'EntrezGene ID' : geneid_column})
-    human = hom_rpt[hom_rpt['NCBI Taxon ID'] == '9606'][['HomoloGene ID', 'EntrezGene ID']]
-    mapping = mouse.merge(human)
+    from_id, to_id, species = known_mappings[mapping_direction]
+    map_from = hom_rpt[hom_rpt['NCBI Taxon ID'] == from_id][['HomoloGene ID', 'EntrezGene ID']].rename(columns = {'EntrezGene ID' : geneid_column})
+    map_to = hom_rpt[hom_rpt['NCBI Taxon ID'] == to_id][['HomoloGene ID', 'EntrezGene ID']]
+    mapping = map_from.merge(map_to)
 
+    new_geneid_column = 'GeneID {}'.format(species)
     mapped = (flat_ids.merge(mapping).drop(geneid_column, 1)
-        .groupby('index').apply(lambda x : pd.Series({'GeneID human': ';'.join(x['EntrezGene ID']), 'HomoloGene ID': ';'.join(x['HomoloGene ID'])})))
+        .groupby('index').apply(lambda x : pd.Series({new_geneid_column: ';'.join(x['EntrezGene ID']), 'HomoloGene ID': ';'.join(x['HomoloGene ID'])})))
     mapped.columns = pd.MultiIndex.from_tuples([[x] + ['' for _ in data.columns.names[1:]] for x in mapped.columns], names=data.columns.names)
+    if 'HomoloGene ID' in data.columns:
+        mapped = mapped.rename(columns={'HomoloGene ID': 'HomoloGene ID_'})
 
     data.join(mapped).to_perseus(args.outfile, main_columns = data_columns)

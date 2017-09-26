@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -14,8 +15,8 @@ namespace PluginPHOTON
     public class HomologyMapping : PluginInterop.Python.MatrixProcessing
     {
         public override string Heading => "Homology";
-        public override string Name => "Map mouse genes to human";
-        public override string Description => "Map mouse entrez gene ids to human entrez gene ids by homology.";
+        public override string Name => "Map between humaan and mouse genes";
+        public override string Description => "Map between mouse entrez gene ids and human entrez gene ids by homology from MGI.";
         public override bool HasButton => false;
 
         protected override string[] ReqiredPythonPackages => new[] { "perseuspy" };
@@ -42,7 +43,11 @@ namespace PluginPHOTON
             new SingleChoiceParam("GeneID", Math.Max(0, geneid))
             {
                 Values = mdata.StringColumnNames
-            }
+            },
+            new SingleChoiceParam("Map from", 0)
+            {
+                Values = new List<string> {"mouse to human", "human to mouse"}
+            },
             };
         }
         
