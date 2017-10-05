@@ -18,12 +18,12 @@ namespace PluginPHOTON
         protected override string[] ReqiredPythonPackages => new[] { "perseuspy" };
 
 
-        protected override string GetCodeFile(Parameters param)
+        protected override bool TryGetCodeFile(Parameters param, out string codeFile)
         {
             byte[] code = (byte[])Properties.Resources.ResourceManager.GetObject("homology_mapping");
-            var codeFile = Path.GetTempFileName();
+            codeFile = Path.GetTempFileName();
             File.WriteAllText(codeFile, Encoding.UTF8.GetString(code));
-            return codeFile;
+            return true;
         }
 
 
