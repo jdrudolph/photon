@@ -21,12 +21,12 @@ namespace PluginPHOTON
         protected override string[] ReqiredPythonPackages => new[] { "perseuspy", "phos" };
 
 
-        protected override string GetCodeFile(Parameters param)
+        protected override bool TryGetCodeFile(Parameters param, out string codeFile)
         {
             byte[] code = (byte[])Properties.Resources.ResourceManager.GetObject("calculate_scores");
-            var codeFile = Path.GetTempFileName();
+            codeFile = Path.GetTempFileName();
             File.WriteAllText(codeFile, Encoding.UTF8.GetString(code));
-            return codeFile;
+            return true;
         }
 
         protected override Parameter[] SpecificParameters(IMatrixData mdata, ref string errString)
