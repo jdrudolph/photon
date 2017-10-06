@@ -13,7 +13,7 @@ if __name__ == '__main__':
     parser.add_argument('infile', type=argparse.FileType('r'))
     parser.add_argument('outfolder', type=str)
     args = parser.parse_args()
-    print('reading parameters')
+    print('Reading parameters')
     paramFile = params.parse_parameters(args.paramfile)
     parameters = {
             'ppi-network' : {
@@ -53,17 +53,20 @@ if __name__ == '__main__':
         print("No terminals were found. Please make sure that the selected values are present in the table.")
         sys.exit(1)
     network_undirected = networker.load(**parameters['ppi-network'])
+    print('Querying ANAT server')
     subnet = anat.remote_network('Perseus', network_undirected, terminals, anchor = anchor)
-    subnet.to_csv('subnet.csv')
+    if subnet is None:
+        print("The resulting network did not contain any edges")
+        sys.exit(1)
     G = nx.from_pandas_dataframe(subnet, 's', 't', edge_attr=True)
     for node in G:
-        if node in terminals:
+        if str(node) in set(terminals.astype(str)):
             node_type = 'terminal'
-        elif node == anchor:
+        elif str(node) == str(anchor):
             node_type = 'anchor'
         else:
             node_type = 'connector'
         G.node[node]['Type'] = node_type
     networks_table, networks = nx.to_perseus([G])
-    print('writing results')
+    print('Writing results')
     write_networks(args.outfolder, networks_table, networks)

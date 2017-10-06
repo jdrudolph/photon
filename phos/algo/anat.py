@@ -180,6 +180,8 @@ def submit_job(sessionId, network_undirected, anchor, terminals):
     return submit_response.text 
 
 def parse_result(result):
+    """ Parse ANAT server response. Returns pd.DataFrame with edges or None if no edges were found
+    """
     network_graph = result[0][0]
     edges = {}
     for x in network_graph:
@@ -190,10 +192,9 @@ def parse_result(result):
     try:
         subnetwork = (edges[['id1', 'id2']].astype(int)
             .rename(columns={'id1' : 's', 'id2' : 't'}))
+        return subnetwork
     except KeyError:
-        print('result did not contain edges')
-        subnetwork = pd.DataFrame({'s' : [-1], 't' : [-1]})
-    return subnetwork
+        return None
 
 
 def network(sessionId, terminals, anchor=None, **kwargs):
@@ -219,6 +220,5 @@ def remote_network(sessionId, network_undirected, terminals, anchor=None, **kwar
         result = ET.fromstring(get_result(sessionId))
         got_result = len(result[0][0]) > 0
         time.sleep(5)
-    print(result)
     return parse_result(result)
 
