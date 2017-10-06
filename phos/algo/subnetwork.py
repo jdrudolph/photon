@@ -14,6 +14,9 @@ def inference(exp, scores, network_undirected, anat, go, task_id, db, **kwargs):
     #    active, exp, task_id=task_id, **anat)
     subnetwork = phos.algo.anat.remote_network(task_id, network_undirected,
             active, anat.get('anchor', None))
+    if subnetwork is None:
+        print("Subnetwork did not contain any edges")
+        subnetwork = pd.DataFrame({'s':[-1], 't':['-1']})
     # GO enrichment
     O = goenrich.obo.ontology(db['go']['ontology'])
     annotations = goenrich.read.gene2go(db['go']['annotations'])
