@@ -61,12 +61,14 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="HomologyMapping.cs" />
+    <Compile Include="NetworkReconstructionProcessing.cs" />
     <Compile Include="SignalingScoreProcessing.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Resources\calculate_scores.py" />
     <None Include="Resources\homology_mapping.py" />
+    <None Include="Resources\reconstruct_network.py" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
