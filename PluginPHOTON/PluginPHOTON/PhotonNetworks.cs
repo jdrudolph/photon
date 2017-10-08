@@ -12,19 +12,22 @@ using Path = System.IO.Path;
 
 namespace PluginPHOTON
 {
-    public class NetworkReconstructionProcessing : PluginInterop.Python.NetworkFromMatrix
+    public class PhotonNetworks : PluginInterop.Python.NetworkFromMatrix
     {
         public override string Heading => "Modifications";
-        public override string Name => "ANAT";
+        public override string Name => "PHOTON";
         public override string Description => "Reconstruct a signaling pathway";
         public override Bitmap2 DisplayImage => GraphUtils.ToBitmap2(Properties.Resources.icon);
 
+        public override int NumSupplTables => 1;
+        public override string HelpOutput => "Reconstructed signaling networks";
+        public override string[] HelpSupplTables => new [] {"Signaling score for all proteins in the PPI network with sufficient data."};
         protected override string[] ReqiredPythonPackages => new[] { "perseuspy", "phos" };
 
 
         protected override bool TryGetCodeFile(Parameters param, out string codeFile)
         {
-            byte[] code = (byte[])Properties.Resources.ResourceManager.GetObject("reconstruct_network");
+            byte[] code = (byte[])Properties.Resources.ResourceManager.GetObject("pipeline");
             codeFile = Path.GetTempFileName();
             File.WriteAllText(codeFile, Encoding.UTF8.GetString(code));
             return true;
@@ -53,23 +56,23 @@ namespace PluginPHOTON
                 {
                     Help = "Has to be a human entrez gene id. Select the starting point of the signaling network (optional)."
                 }, 
-                new SingleChoiceWithSubParams("Select terminals from")
+                new SingleChoiceParam("Amino acid")
                 {
-                    Value = Math.Max(0, mdata.CategoryColumnNames.FindIndex(col => col.ToLower().Contains("significant"))),
+                    Value = mdata.CategoryColumnNames.FindIndex(col => col.ToLower().Equals("amino acid")),
                     Values = mdata.CategoryColumnNames,
-                    Help = "Select the end points (terminals) of the signaling networks.",
-                    SubParams = Enumerable.Range(0, mdata.CategoryColumnCount).Select(i =>
-                    {
-                        var subParam = new MultiChoiceParam("Select", new int[0])
-                        {
-                            Values = mdata.GetCategoryColumnValuesAt(i)
-                        };
-                        return new Parameters(subParam);
-                    }).ToArray()
+                    Help = "Amino acid of the modification"
                 }, 
+                new SingleChoiceParam("Position")
+                {
+                    Value = mdata.NumericColumnNames.FindIndex(col => col.ToLower().Equals("position")),
+                    Values = mdata.NumericColumnNames,
+                    Help = "Position of the modification within the protein"
+                },
                 new FileParam("Network", networkLocation) {Help="Weighted PPI network."},
                 new DoubleParam("Network confidence", 0.5) {Help = "Imposes a confidence cutoff on the edges of the PPI network."},
                 new IntParam("Network node degree threshold", 150) {Help = "Removes highly connected nodes (such as Ubiquitin) from the network."},
+                new IntParam("Required number of observations", 4) {Help = "Required minumum number of observations for score calculation."},
+                new IntParam("Number of permutations", 1000) {Help = "Number of permutations used for empirical p-value calculation"},
             };
         }
     }

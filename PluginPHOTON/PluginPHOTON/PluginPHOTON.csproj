@@ -39,8 +39,8 @@
     <Reference Include="PerseusApi, Version=1.6.0.225, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\PerseusApi.1.6.0.225\lib\net45\PerseusApi.dll</HintPath>
     </Reference>
-    <Reference Include="PluginInterop, Version=1.6.0.34, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PluginInterop.1.6.0.34\lib\net45\PluginInterop.dll</HintPath>
+    <Reference Include="PluginInterop, Version=1.6.0.35, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PluginInterop.1.6.0.35\lib\net45\PluginInterop.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PhotonNetworks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -68,6 +69,7 @@
     <None Include="packages.config" />
     <None Include="Resources\calculate_scores.py" />
     <None Include="Resources\homology_mapping.py" />
+    <None Include="Resources\pipeline.py" />
     <None Include="Resources\reconstruct_network.py" />
   </ItemGroup>
   <ItemGroup>
