@@ -93,6 +93,16 @@ namespace PluginPHOTON.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] photon_from_network {
+            get {
+                object obj = ResourceManager.GetObject("photon_from_network", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] pipeline {
             get {
                 object obj = ResourceManager.GetObject("pipeline", resourceCulture);
