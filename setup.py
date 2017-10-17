@@ -1,20 +1,28 @@
-from setuptools import setup
+from setuptools import setup, find_packages
+
+import os
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(name='PHOTON',
-      version='0.1',
-      description='PHOsphoproteomic dissecTiOn via Networks',
-      author='Jan Daniel Rudolph',
-      author_email='jan.daniel.rudolph@gmail.com',
-      license='MIT',
-      packages=['phos'],
-      install_requires=[
-          'numpy',
-          'pandas',
-          'scipy',
-          'matplotlib',
-          'statsmodels',
-          'networkx',
-          'flask',
-	  'celery',
-	  'redis',
-          'goenrich'])
+        version='0.2.0',
+        description='PHOsphoproteomic dissecTiOn via Networks',
+        long_description=read('README.md'),
+        url='http://www.github.com/jdrudolph/photon',
+        author='Jan Rudolph',
+        author_email='jan.daniel.rudolph@gmail.com',
+        license='MIT',
+        packages=find_packages(),
+        install_requires=[
+            'numpy',
+            'pandas >= 0.21',
+            'scipy',
+            'matplotlib',
+            'statsmodels',
+            'networkx',
+            'perseuspy',
+            'flask',
+            'celery',
+            'redis',
+            'goenrich']
+) 
