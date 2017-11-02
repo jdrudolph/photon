@@ -4,7 +4,7 @@ import os
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-setup(name='PHOTON',
+setup(name='photon_ptm',
         version='0.2.0',
         description='PHOsphoproteomic dissecTiOn via Networks',
         long_description=read('README.md'),
@@ -15,12 +15,12 @@ setup(name='PHOTON',
         packages=find_packages(),
         install_requires=[
             'numpy',
-            'pandas >= 0.21',
+            'pandas>=0.21',
             'scipy',
             'matplotlib',
             'statsmodels',
             'networkx',
-            'perseuspy',
+            'perseuspy==0.3.0',
             'flask',
             'celery',
             'redis',

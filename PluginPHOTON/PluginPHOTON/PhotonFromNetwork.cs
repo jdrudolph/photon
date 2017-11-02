@@ -18,7 +18,7 @@ namespace PluginPHOTON
         public override string Description => "Reconstruct a signaling pathway";
         public override Bitmap2 DisplayImage => GraphUtils.ToBitmap2(Properties.Resources.icon);
 
-        protected override string[] ReqiredPythonPackages => new[] { "perseuspy", "phos" };
+        protected override string[] ReqiredPythonPackages => new[] { "perseuspy", "phos", "joblib" };
         public override int NumSupplTables => 2;
         public override DataType[] SupplDataTypes => new [] {DataType.Network, DataType.Matrix};
 

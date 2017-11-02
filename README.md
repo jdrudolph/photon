@@ -42,10 +42,8 @@ Sometimes PHOTON will not yield any results. Known technical sources of failure 
 ## Installation
 1. Download [Perseus](https://www.ncbi.nlm.nih.gov/pubmed/27348712) from [here](http://www.coxdocs.org/doku.php?id=perseus:common:download_and_installation).
 2. Install [Python](https://www.python.org/downloads/).
-3. Install [perseuspy](https://github.com/jdrudolph/perseuspy).
-4. In the same way, install PHOTON by running `pip install PHOTON`.
-5. Download `PluginInterop` ([more...](https://github.com/jdrudolph/PluginInterop)) and `PluginPHOTON`
-from the [plugin store](http://www.coxdocs.org/doku.php?id=perseus:user:plugins:store).
+3. Install [perseuspy](https://github.com/jdrudolph/perseuspy) and PHOTON by running `pip install photon_ptm`.
+4. Download `PluginPHOTON` from the [plugin store](http://www.coxdocs.org/doku.php?id=perseus:user:plugins:store).
 
 ## Usage
 1. Load the `H_sapiens.txt` file using `Generic matrix upload`.

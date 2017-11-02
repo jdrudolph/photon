@@ -11,7 +11,7 @@ namespace PluginPHOTON
     public class HomologyMapping : PluginInterop.Python.MatrixProcessing
     {
         public override string Heading => "Homology";
-        public override string Name => "Map between humaan and mouse genes";
+        public override string Name => "Map between human and mouse genes";
         public override string Description => "Map between mouse entrez gene ids and human entrez gene ids by homology from MGI.";
         public override bool HasButton => false;
 
