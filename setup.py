@@ -1,11 +1,15 @@
 from setuptools import setup, find_packages
 
 import os
+HERE = os.path.dirname(__file__)
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+    return open(os.path.join(HERE, fname)).read()
+
+# creates version_string
+exec(open(os.path.join(HERE, "phos", "version.py")).read())
 
 setup(name='photon_ptm',
-        version='0.2.0',
+        version=version_string,
         description='PHOsphoproteomic dissecTiOn via Networks',
         long_description=read('README.md'),
         url='http://www.github.com/jdrudolph/photon',
@@ -20,7 +24,7 @@ setup(name='photon_ptm',
             'matplotlib',
             'statsmodels',
             'networkx',
-            'perseuspy==0.3.0',
+            'perseuspy==0.3.2',
             'flask',
             'celery',
             'redis',
