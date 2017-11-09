@@ -3,6 +3,7 @@ work
 example
 __pycache__
 
+dist/
 *.egg-info
 *.svg
 *.png
