@@ -9,4 +9,5 @@ script: "python -c \"import phos\""
 
 branches:
         only:
+                - master
                 - perseus-plugin
