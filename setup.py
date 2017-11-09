@@ -28,5 +28,6 @@ setup(name='photon_ptm',
             'flask',
             'celery',
             'redis',
-            'goenrich']
+            'goenrich',
+            'joblib']
 ) 
