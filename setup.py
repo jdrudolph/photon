@@ -29,5 +29,6 @@ setup(name='photon_ptm',
             'celery',
             'redis',
             'goenrich',
+            'joblib',
             'pytest-runner'],
         tests_require=['pytest'])
