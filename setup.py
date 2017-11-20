@@ -19,5 +19,6 @@ setup(name='PHOTON',
 	  'celery',
 	  'redis',
           'goenrich',
+          'sklearn',
           'pytest-runner'],
       tests_require=['pytest'])
