@@ -5,9 +5,4 @@ python:
 install:
         - "pip install -e ."
 # command to run tests
-script: "python -c \"import phos\""
-
-branches:
-        only:
-                - master
-                - perseus-plugin
+script: "python setup.py test"
