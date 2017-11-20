@@ -27,9 +27,8 @@ def inference(exp, scores, network_undirected, anat, go, task_id, db, **kwargs):
 
 import networkx as nx
 from networkx.readwrite import json_graph
-from phos.defaults import ROOT_DIR 
 
-def draw(exp, scores, network, task_id, anchor=None):
+def draw(exp, scores, network, task_id, template_dir, db, anchor=None):
     """ generate interactive result graph based on d3js
     
     check `phos/algo/anat.html` for the javascript part of the visualization
@@ -58,7 +57,7 @@ def draw(exp, scores, network, task_id, anchor=None):
     
     graph = json.dumps(json_graph.node_link_data(G))
     from jinja2 import Environment, FileSystemLoader
-    env = Environment(loader=FileSystemLoader(os.path.join(ROOT_DIR, 'templates')))
+    env = Environment(loader=FileSystemLoader(template_dir))
     HTML = env.get_template('result.html').render(task_id=task_id, graph=graph)
     return HTML
 

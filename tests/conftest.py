@@ -19,4 +19,4 @@ def clean_dir_with_data(request):
     os.chdir(newpath)
     with tarfile.open(db_path) as uncompressed:
             print('extracting data')
-            uncompressed.extractall('db')
+            uncompressed.extractall()

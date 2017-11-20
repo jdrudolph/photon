@@ -217,6 +217,5 @@ def remote_network(sessionId, network_undirected, terminals, anchor=None, **kwar
         result = ET.fromstring(get_result(sessionId))
         got_result = len(result[0][0]) > 0
         time.sleep(5)
-    print(result)
     return parse_result(result)
 

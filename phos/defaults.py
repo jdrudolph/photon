@@ -1,28 +1,26 @@
 from phos.util import read_json
 from os.path import dirname, join, isfile
 
+descriptions = {
+        'go' : 'Gene Ontology enrichment',
+        'max_category_size' : 'Maximal category size',
+        'min_category_size' : 'Minimal category size',
+        'max_category_depth' : 'Maximal ontolgy-tree depth',
+        'anat' : 'Network reconstruction',
+        'anchor' : 'Signaling source (anchor)',
+        'alpha' : 'Global-local optimization tradeoff ($\\alpha$)',
+        'activity' : 'Signaling functionality scoring',
+        'permutations' : 'Permutations ($r$)',
+        'min_size' : 'Required number of observations ($n_0$)',
+        'ppi-network' : 'Protein-protein interaction network',
+        'degree_threshold' : 'Maximal protein degree',
+        'confidence' : 'Edge-confidence threshold'}
+
 def make_defaults(root_dir, work='work', example='example', db='db'):
     work_dir = join(root_dir, work)
     example_dir = join(root_dir, example)
     db_dir = join(root_dir, db)
-    parameters = read_json(join(root_dir, 'parameters.json'))
-    descriptions = {
-            'go' : 'Gene Ontology enrichment',
-            'max_category_size' : 'Maximal category size',
-            'min_category_size' : 'Minimal category size',
-            'max_category_depth' : 'Maximal ontolgy-tree depth',
-            'anat' : 'Network reconstruction',
-            'anchor' : 'Signaling source (anchor)',
-            'alpha' : 'Global-local optimization tradeoff ($\\alpha$)',
-            'activity' : 'Signaling functionality scoring',
-            'permutations' : 'Permutations ($r$)',
-            'min_size' : 'Required number of observations ($n_0$)',
-            'ppi-network' : 'Protein-protein interaction network',
-            'degree_threshold' : 'Maximal protein degree',
-            'confidence' : 'Edge-confidence threshold'}
-
     steinprt = join(root_dir, 'bin', 'steinprt')
-        
     db = { "geneinfo" : join(db_dir, 'geneinfo', 'Homo_sapiens.gene_info.gz'),
             "uniprot_mapping" : join(db_dir, 'uniprot',
                 'HUMAN_9606_idmapping.dat.gz'),
@@ -43,4 +41,4 @@ def make_defaults(root_dir, work='work', example='example', db='db'):
                     'Kinase_Substrate_Dataset.gz')
                 }
             }
-    return {'root': root_dir, 'work': work_dir, 'example': example_dir, 'db': db, 'parameters': parameters, 'descriptions': descriptions}
+    return {'root': root_dir, 'work': work_dir, 'example': example_dir, 'db': db, 'steinprt': steinprt}
