@@ -6,10 +6,8 @@ import networkx as nx
 from networkx.readwrite import json_graph
 import json
 
-from phos.defaults import db, steinprt, WORK_DIR
-
 def run_locally(network_undirected, terminals, data, anchor,
-        alpha, task_id, viz_out=None, **kwargs):
+        alpha, task_id, work_dir, viz_out=None, steinprt='steinprt', **kwargs):
     """
     run anat subnetwork inference ** requires steinprt binary **
     
@@ -21,7 +19,7 @@ def run_locally(network_undirected, terminals, data, anchor,
     :param viz_out: file path. Result will be saved at `viz_out`.js and `viz_out`.html
     :returns subnetwork: the resulting subnetwork as a table
     """
-    anat_dir = os.path.join(WORK_DIR, task_id, 'anat')
+    anat_dir = os.path.join(work_dir, task_id, 'anat')
     os.makedirs(anat_dir, exist_ok=True)
     _terminals = terminals.to_frame(name='terminal').reset_index(drop=True)
     _terminals['anchor'] = anchor

@@ -5,9 +5,7 @@ import pandas as pd
 import phos.algo.logistic_regression as clf
 import phos.util.mapping as mapping
 
-from phos.defaults import db
-
-def predict_functional_sites(exp, scores, _functional_features = ['num_sites'], **kwargs):
+def predict_functional_sites(exp, scores, db, _functional_features = ['num_sites'], **kwargs):
     num_sites = get_sites_per_geneid(db['uniprot_mapping'],
             **db['phosphosite'])
     predicted_functional = (exp.merge(scores, on='GeneID')

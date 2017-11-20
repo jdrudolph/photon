@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='PHOTON',
       version='0.1',
@@ -6,7 +6,7 @@ setup(name='PHOTON',
       author='Jan Daniel Rudolph',
       author_email='jan.daniel.rudolph@gmail.com',
       license='MIT',
-      packages=['phos'],
+      packages=find_packages(),
       install_requires=[
           'numpy',
           'pandas',
@@ -17,4 +17,6 @@ setup(name='PHOTON',
           'flask',
 	  'celery',
 	  'redis',
-          'goenrich'])
+          'goenrich',
+          'pytest-runner'],
+      tests_require=['pytest'])

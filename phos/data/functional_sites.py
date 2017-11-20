@@ -3,8 +3,6 @@ import os
 
 import pandas as pd
 
-from phos.defaults import db
-
 def filter_phospho(df):
     """ filter and format phosphosite extra tables """
     is_human = df['ORGANISM'] == 'human'
@@ -65,7 +63,7 @@ def uniprot_humsavar(filename):
     out.seek(0)
     return pd.read_table(out, na_values='-')
 
-def read_files():
+def read_files(db):
     """ return functional sites sources
     dis - disease associated sites from uniprot
     reg - regulatory sites from uniprot
@@ -80,13 +78,13 @@ def read_files():
     muts = mapping.map_protein_groups(_muts, 'ACC')[['GeneID', 'Amino.Acid', 'Position']]
     return dis, reg, muts
 
-_cache = '.functional_sites.pkl'
-if os.path.isfile(_cache):
-    with open(_cache, 'rb') as f:
-        functional_sites = pickle.load(f)
-else:
-    dis, reg, muts = read_files()
-    functional_sites = (dis.append(reg).append(muts).drop_duplicates())
-    with open(_cache, 'wb') as f:
-        pickle.dump(functional_sites, f)
-
+def functional_sites(db):
+    _cache = '.functional_sites.pkl'
+    if os.path.isfile(_cache):
+        with open(_cache, 'rb') as f:
+            functional_sites = pickle.load(f)
+    else:
+        dis, reg, muts = read_files()
+        functional_sites = (dis.append(reg).append(muts).drop_duplicates())
+        with open(_cache, 'wb') as f:
+            pickle.dump(functional_sites, f)

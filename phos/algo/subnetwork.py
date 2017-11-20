@@ -6,9 +6,8 @@ import pandas as pd
 import numpy as np
 
 import phos.algo.anat
-from phos.defaults import db, parameters
 
-def inference(exp, scores, network_undirected, anat, go, task_id, **kwargs):
+def inference(exp, scores, network_undirected, anat, go, task_id, db, **kwargs):
     active = scores[scores['Significant']]['GeneID']
     # LOCAL
     # subnetwork = phos.algo.anat.local_network(network_undirected,

@@ -6,8 +6,6 @@ import numpy as np
 import json
 
 import phos.util
-import phos.defaults
-from phos.defaults import WORK_DIR
 
 import phos.data.read as reader
 import phos.data.network as networker
@@ -15,6 +13,8 @@ import phos.data.network as networker
 import phos.algo.activity as activity
 import phos.algo.subnetwork as subnetwork
 import phos.algo.functional_sites as functional_sites
+
+from phos.defaults import make_defaults
 
 def print_progress(message):
     print('progress:', message)
@@ -42,20 +42,20 @@ def _run(task_id, data, parameters, set_progress=print_progress):
     set_progress('5/5 all done')
     return exp, scores, subnet, go_scores, predictions
 
-def run(task_id, data, parameters, set_progress=print_progress):
+def run(task_id, data, parameters, work_dir, set_progress=print_progress):
     if parameters['anat'].get('anchor', None) < 1:
         del parameters['anat']['anchor']
     exp, scores, subnet, go_scores, predictions = _run(task_id, data, parameters, set_progress)
-    with open(join(WORK_DIR, task_id, 'parameters.json'), 'w') as f:
+    with open(join(work_dir, task_id, 'parameters.json'), 'w') as f:
         json.dump(parameters, f, indent=1)
-    scores.to_csv(join(WORK_DIR, task_id, 'scores.csv'), index=False)
-    subnet.to_csv(join(WORK_DIR, task_id, 'subnet.csv'), index=False)
-    go_scores.to_csv(join(WORK_DIR, task_id, 'go_scores.csv'), index=False)
+    scores.to_csv(join(work_dir, task_id, 'scores.csv'), index=False)
+    subnet.to_csv(join(work_dir, task_id, 'subnet.csv'), index=False)
+    go_scores.to_csv(join(work_dir, task_id, 'go_scores.csv'), index=False)
     HTML = subnetwork.draw(exp, scores, subnet, task_id,
         parameters['anat'].get('anchor', None))
-    with open(join(WORK_DIR, task_id, 'result.html'), 'w') as f:
+    with open(join(work_dir, task_id, 'result.html'), 'w') as f:
         f.write(HTML)
-    predictions[0].to_csv(join(WORK_DIR, task_id, 'predictions.csv'), index=False)
+    predictions[0].to_csv(join(work_dir, task_id, 'predictions.csv'), index=False)
 
 if __name__ == '__main__':
     import argparse
@@ -74,7 +74,8 @@ if __name__ == '__main__':
             help='change parameter --parameter alpha=0.1, \
                     can be supplied mutliple times')
     args = parser.parse_args()
-    parameters = phos.defaults.parameters.copy()
+    defaults = make_defaults('.')
+    parameters = defaults['parameters'].copy()
     parameters['anat']['anchor'] = args.anchor if args.anchor > 0 else None
     # update default values
     for _param in args.parameter:
@@ -89,6 +90,6 @@ if __name__ == '__main__':
         _parameters = phos.util.read_json(args.json)
         phos.util.deep_update(parameters, _parameters)
     task_id = args.task_id
-    os.makedirs(os.path.join(phos.defaults.WORK_DIR, task_id), exist_ok=True)
+    os.makedirs(os.path.join(defaults['work'], task_id), exist_ok=True)
     print('running', task_id)
     run(task_id, args.data, parameters)
