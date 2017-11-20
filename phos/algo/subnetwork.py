@@ -28,16 +28,12 @@ def inference(exp, scores, network_undirected, anat, go, task_id, db, **kwargs):
 import networkx as nx
 from networkx.readwrite import json_graph
 
-def draw(exp, scores, network, task_id, template_dir, db, anchor=None):
-    """ generate interactive result graph based on d3js
-    
-    check `phos/algo/anat.html` for the javascript part of the visualization
-
+def create_graph(exp, scores, network, task_id, db, anchor=None):
+    """ generate result graph
     :param exp: pandas.DataFrame with columns: Symbol, GeneID, Amino.Acid, Position, avg
     :param scores: protein activity scores 
     :param network: pandas.DataFrame with columns 's' -> 't'
     :param anchor: anchor id
-    :returns HTML: the generated graph
     """
     terminals = set(scores[scores['Significant']]['GeneID'])
     G = nx.from_edgelist([[int(x) for x in y] for y in network[['s','t']].values])
@@ -54,7 +50,20 @@ def draw(exp, scores, network, task_id, template_dir, db, anchor=None):
         G.node[n]['name'] = gene_name.get(n, n)
     if anchor in G and anchor is not None:
         G.node[anchor]['type'] = 'anchor'
+    return G
+
+def draw(exp, scores, network, task_id, template_dir, db, anchor=None):
+    """ generate interactive result graph based on d3js
     
+    check `phos/algo/anat.html` for the javascript part of the visualization
+
+    :param exp: pandas.DataFrame with columns: Symbol, GeneID, Amino.Acid, Position, avg
+    :param scores: protein activity scores 
+    :param network: pandas.DataFrame with columns 's' -> 't'
+    :param anchor: anchor id
+    :returns HTML: the generated graph
+    """
+    G = create_graph(exp, scores, network, task_id, db, anchor)
     graph = json.dumps(json_graph.node_link_data(G))
     from jinja2 import Environment, FileSystemLoader
     env = Environment(loader=FileSystemLoader(template_dir))
