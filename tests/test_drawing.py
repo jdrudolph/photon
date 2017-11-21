@@ -23,14 +23,13 @@ def test_drawing_small_example():
     defaults = phos.defaults.make_defaults(os.path.abspath("."))
     G = phos.algo.subnetwork.create_graph(exp, scores, network, "test", defaults['db'], anchor=3)
     graph = json_graph.node_link_data(G)
+    node_index = {n['id']: i for i,n in enumerate(graph['nodes'])}
+    graph['links'] = [{'source': node_index[link['source']], 'target': node_index[link['target']]} for link in graph['links']]
     assert G.number_of_nodes() == len(graph['nodes']) == 5
     assert G.number_of_edges() == len(graph['links']) == 4
-    assert type(graph['nodes']['id']) is str
+    assert type(graph['nodes'][0]['id']) is str
     from jinja2 import Environment, FileSystemLoader
     template_dir = os.path.join(defaults['root'], 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
     graph_str = json.dumps(graph)
     HTML = env.get_template('result.html').render(task_id='test', graph=graph_str)
-    with open('test.html', 'w') as f:
-        f.write(HTML)
-    assert False

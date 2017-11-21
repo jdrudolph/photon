@@ -36,10 +36,9 @@ def create_graph(exp, scores, network, task_id, db, anchor=None):
     :param anchor: anchor id
     """
     terminals = set(scores[scores['Significant']]['GeneID'])
-    G = nx.from_edgelist([[str(x) for x in y] for y in network[['s','t']].values])
+    G = nx.from_edgelist([[int(x) for x in y] for y in network[['s','t']].values])
     df = (exp[['Symbol', 'GeneID', 'Amino.Acid', 'Position', 'avg']]
             [exp['GeneID'].isin(network['s']) | exp['GeneID'].isin(network['t'])])
-    df['GeneID'] = df['GeneID'].astype(str)
     node_attributes = (df.groupby('GeneID')
             .apply(lambda x : [{'AA': a, 'POS': int(p), 'AVG': v, 'NUM': len(x)} for a,p,v in
                 zip(x['Amino.Acid'].values, x['Position'].values, x['avg'].values)]))
@@ -65,10 +64,12 @@ def draw(exp, scores, network, task_id, template_dir, db, anchor=None):
     :returns HTML: the generated graph
     """
     G = create_graph(exp, scores, network, task_id, db, anchor)
-    graph = json.dumps(json_graph.node_link_data(G))
+    graph = json_graph.node_link_data(G)
+    node_index = {n['id']: i for i,n in enumerate(graph['nodes'])}
+    graph['links'] = [{'source': node_index[link['source']], 'target': node_index[link['target']]} for link in graph['links']]
     from jinja2 import Environment, FileSystemLoader
     env = Environment(loader=FileSystemLoader(template_dir))
-    HTML = env.get_template('result.html').render(task_id=task_id, graph=graph)
+    HTML = env.get_template('result.html').render(task_id=task_id, graph=json.dumps(graph))
     return HTML
 
 def _rnd_go(exp, _score, network_undirected, anat, go, seed):
