@@ -4,6 +4,8 @@ import phos
 import phos.defaults
 import phos.pipeline
 import os
+import pandas as pd
+
 parameters = {
         "activity" : {
             "min_size" : 4,
@@ -30,3 +32,21 @@ def test_egf_data_example(clean_dir_with_data):
     _parameters = parameters.copy()
     _parameters['anat']['anchor'] = 1950
     results = phos.pipeline._run(str(uuid.uuid4()), 'data.csv', _parameters, defaults['db']) 
+
+@pytest.mark.parametrize('clean_dir_with_data', ['static/data.csv'], indirect=['clean_dir_with_data'])
+def test_one_site_per_gene(clean_dir_with_data):
+    defaults = phos.defaults.make_defaults(os.path.abspath('.'))
+    _parameters = parameters.copy()
+    _parameters['anat']['anchor'] = 1950
+    df = pd.read_csv('data.csv')
+    df.drop_duplicates(subset=['GeneID']).to_csv('one_site_per_gene.csv', index=False)
+    results = phos.pipeline._run(str(uuid.uuid4()), 'one_site_per_gene.csv', _parameters, defaults['db'])
+
+@pytest.mark.parametrize('clean_dir_with_data', ['static/data.csv'], indirect=['clean_dir_with_data'])
+def test_tiny_dataset(clean_dir_with_data):
+    defaults = phos.defaults.make_defaults(os.path.abspath('.'))
+    _parameters = parameters.copy()
+    _parameters['anat']['anchor'] = 1950
+    df = pd.read_csv('data.csv')
+    df.head(100).to_csv('tiny_dataset.csv', index=False)
+    results = phos.pipeline._run(str(uuid.uuid4()), 'tiny_dataset.csv', _parameters, defaults['db'])

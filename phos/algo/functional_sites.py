@@ -15,8 +15,11 @@ def predict_functional_sites(exp, scores, db, _functional_features = ['num_sites
     merged = pd.merge(predicted_functional, known_functional, how='left')
     predicted_functional['label'] = merged['functional'].notnull()
     features = ['avg'] + _functional_features + ['score_empiric']
-    res = clf.logistic_regression(predicted_functional, features)
-    probas, coefs, mean_fpr, mean_tpr, mean_auc, classifier = res
+    if merged.shape[0] > 10:
+        res = clf.logistic_regression(predicted_functional, features)
+        probas, coefs, mean_fpr, mean_tpr, mean_auc, classifier = res
+    else:
+        probas, coefs, mean_fpr, mean_tpr, mean_auc, classifier = (float('NaN'), [], float('NaN'), float('NaN'), float('NaN'), None)
     predicted_functional['proba'] = probas
     return predicted_functional, coefs, mean_fpr, mean_tpr, mean_auc, classifier
 
