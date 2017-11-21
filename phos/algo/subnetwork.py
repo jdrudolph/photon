@@ -36,9 +36,10 @@ def create_graph(exp, scores, network, task_id, db, anchor=None):
     :param anchor: anchor id
     """
     terminals = set(scores[scores['Significant']]['GeneID'])
-    G = nx.from_edgelist([[int(x) for x in y] for y in network[['s','t']].values])
+    G = nx.from_edgelist([[str(x) for x in y] for y in network[['s','t']].values])
     df = (exp[['Symbol', 'GeneID', 'Amino.Acid', 'Position', 'avg']]
             [exp['GeneID'].isin(network['s']) | exp['GeneID'].isin(network['t'])])
+    df['GeneID'] = df['GeneID'].astype(str)
     node_attributes = (df.groupby('GeneID')
             .apply(lambda x : [{'AA': a, 'POS': int(p), 'AVG': v, 'NUM': len(x)} for a,p,v in
                 zip(x['Amino.Acid'].values, x['Position'].values, x['avg'].values)]))
