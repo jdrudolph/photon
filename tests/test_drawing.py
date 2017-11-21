@@ -8,8 +8,9 @@ import phos.algo.subnetwork
 from networkx.readwrite import json_graph
 import json
 
+@pytest.mark.parametrize('clean_dir_with_data', ['static/data.csv'], indirect=['clean_dir_with_data'])
 @pytest.mark.quick
-def test_drawing_small_example():
+def test_drawing_small_example(clean_dir_with_data):
     exp = pd.DataFrame({
         "GeneID": [10, 20, 30, 40, 50],
         'Symbol': ['a','b','c','d','e'],
@@ -27,7 +28,6 @@ def test_drawing_small_example():
     graph['links'] = [{'source': node_index[link['source']], 'target': node_index[link['target']]} for link in graph['links']]
     assert G.number_of_nodes() == len(graph['nodes']) == 5
     assert G.number_of_edges() == len(graph['links']) == 4
-    assert type(graph['nodes'][0]['id']) is str
     from jinja2 import Environment, FileSystemLoader
     template_dir = os.path.join(defaults['root'], 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
