@@ -31,5 +31,6 @@ setup(name='photon_ptm',
             'redis',
             'goenrich',
             'joblib',
+            'sklearn',
             'pytest-runner'],
         tests_require=['pytest'])
