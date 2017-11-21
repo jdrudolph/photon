@@ -6,9 +6,8 @@ import pandas as pd
 import numpy as np
 
 import phos.algo.anat
-from phos.defaults import db, parameters
 
-def inference(exp, scores, network_undirected, anat, go, task_id, **kwargs):
+def inference(exp, scores, network_undirected, anat, go, task_id, db, **kwargs):
     active = scores[scores['Significant']]['GeneID']
     # LOCAL
     # subnetwork = phos.algo.anat.local_network(network_undirected,
@@ -28,18 +27,13 @@ def inference(exp, scores, network_undirected, anat, go, task_id, **kwargs):
 
 import networkx as nx
 from networkx.readwrite import json_graph
-from phos.defaults import ROOT_DIR 
 
-def draw(exp, scores, network, task_id, anchor=None):
-    """ generate interactive result graph based on d3js
-    
-    check `phos/algo/anat.html` for the javascript part of the visualization
-
+def create_graph(exp, scores, network, task_id, db, anchor=None):
+    """ generate result graph
     :param exp: pandas.DataFrame with columns: Symbol, GeneID, Amino.Acid, Position, avg
     :param scores: protein activity scores 
     :param network: pandas.DataFrame with columns 's' -> 't'
     :param anchor: anchor id
-    :returns HTML: the generated graph
     """
     terminals = set(scores[scores['Significant']]['GeneID'])
     G = nx.from_edgelist([[int(x) for x in y] for y in network[['s','t']].values])
@@ -56,11 +50,26 @@ def draw(exp, scores, network, task_id, anchor=None):
         G.node[n]['name'] = gene_name.get(n, n)
     if anchor in G and anchor is not None:
         G.node[anchor]['type'] = 'anchor'
+    return G
+
+def draw(exp, scores, network, task_id, template_dir, db, anchor=None):
+    """ generate interactive result graph based on d3js
     
-    graph = json.dumps(json_graph.node_link_data(G))
+    check `phos/algo/anat.html` for the javascript part of the visualization
+
+    :param exp: pandas.DataFrame with columns: Symbol, GeneID, Amino.Acid, Position, avg
+    :param scores: protein activity scores 
+    :param network: pandas.DataFrame with columns 's' -> 't'
+    :param anchor: anchor id
+    :returns HTML: the generated graph
+    """
+    G = create_graph(exp, scores, network, task_id, db, anchor)
+    graph = json_graph.node_link_data(G)
+    node_index = {n['id']: i for i,n in enumerate(graph['nodes'])}
+    graph['links'] = [{'source': node_index[link['source']], 'target': node_index[link['target']]} for link in graph['links']]
     from jinja2 import Environment, FileSystemLoader
-    env = Environment(loader=FileSystemLoader(os.path.join(ROOT_DIR, 'templates')))
-    HTML = env.get_template('result.html').render(task_id=task_id, graph=graph)
+    env = Environment(loader=FileSystemLoader(template_dir))
+    HTML = env.get_template('result.html').render(task_id=task_id, graph=json.dumps(graph))
     return HTML
 
 def _rnd_go(exp, _score, network_undirected, anat, go, seed):

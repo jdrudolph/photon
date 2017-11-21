@@ -1,7 +1,6 @@
-from phos.defaults import db
 import pandas as pd
 
-def load(confidence, degree_threshold):
+def load(confidence, degree_threshold, db):
     """ read the network table from file
     filter for low confidence edges and high-degree nodes """
     _anat = pd.read_table(db['ppi-network'],

@@ -1,7 +1,7 @@
 {
   "activity" : {
     "min_size" : 4,
-    "permutations" : 10000
+    "permutations" : 100
   },
   "anat" : {
     "alpha" : 0.25,

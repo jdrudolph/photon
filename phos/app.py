@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 import os
+from os.path import join, abspath, dirname
 import io
 import zipfile
 from glob import glob
 from flask import Flask, url_for, redirect, render_template, request, jsonify, send_from_directory, send_file
-from phos.defaults import ROOT_DIR, WORK_DIR, parameters, descriptions
-
-app = Flask(__name__.split('.')[0],
-        template_folder=os.path.join(ROOT_DIR, 'templates'),
-        static_folder=os.path.join(ROOT_DIR, 'static'))
+from phos.defaults import make_defaults, descriptions
+import phos.util
+defaults = make_defaults(abspath(dirname(dirname(__file__))))
+template_dir = abspath(join(defaults['root'], 'templates'))
+app = Flask(__name__,
+        template_folder=template_dir,
+        static_folder=abspath(join(defaults['root'], 'static')))
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
 app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
 app.config['CELERY_ACCEPT_CONTENT'] = ['json']
@@ -42,11 +45,13 @@ def get_progress(task_id):
 
 @celery.task()
 def phos_task(task_id, data, _parameters):
+    parameters = phos.util.read_json(abspath(join(defaults['root'], 'parameters.json')))
     phos.util.deep_update(parameters, _parameters)
-    return phos.pipeline.run(task_id, data, parameters, set_progress = make_set_progress(task_id))
+    return phos.pipeline.run(task_id, data, parameters, work_dir=defaults['work'], db=defaults['db'], template_dir=template_dir, set_progress = make_set_progress(task_id))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    parameters = phos.util.read_json(abspath(join(defaults['root'], 'parameters.json')))
     parameters['anat']['anchor'] = None
     return render_template('index.html', parameters=parameters,
             descriptions=descriptions)
@@ -54,12 +59,13 @@ def index():
 @app.route('/submit', methods=['POST'])
 def submit():
     task_id = uuid()
-    TASK_DIR = os.path.join(WORK_DIR, task_id)
+    TASK_DIR = os.path.join(defaults['work'], task_id)
     os.makedirs(TASK_DIR)
     file = request.files['data']
     filename = os.path.join(TASK_DIR, 'data.tab')
     file.save(filename)
     form = request.form
+    parameters = phos.util.read_json(abspath(join(defaults['root'], 'parameters.json')))
     _parameters = {k:{} for k in parameters.keys()}
     for _k,v in form.items():
         k, kk = _k.split(':')
@@ -69,14 +75,14 @@ def submit():
 
 @app.route('/get/<task_id>')
 def show_result(task_id):
-    return send_from_directory(os.path.join(WORK_DIR, task_id),
+    return send_from_directory(os.path.join(defaults['work'], task_id),
             filename='result.html')
 
 @app.route('/download/<task_id>')
 def download_result(task_id):
     memory_zip = io.BytesIO()
     with zipfile.ZipFile(memory_zip, 'w') as zf:
-        for path in glob(os.path.join(WORK_DIR, task_id, '*')):
+        for path in glob(os.path.join(defaults['work'], task_id, '*')):
             rpath = os.path.relpath(path)
             arcname = os.path.join(*os.path.split(rpath)[1:])
             zf.write(rpath, arcname=arcname)

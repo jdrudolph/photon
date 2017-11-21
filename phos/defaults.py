@@ -1,10 +1,6 @@
 from phos.util import read_json
 from os.path import dirname, join, isfile
-ROOT_DIR = dirname(dirname(__file__))
-WORK_DIR = join(ROOT_DIR, 'work')
-EXAMPLE_DIR = join(ROOT_DIR, 'example')
-_DB_DIR = join(ROOT_DIR, 'db')
-parameters = read_json(join(ROOT_DIR, 'parameters.json'))
+
 descriptions = {
         'go' : 'Gene Ontology enrichment',
         'max_category_size' : 'Maximal category size',
@@ -20,25 +16,29 @@ descriptions = {
         'degree_threshold' : 'Maximal protein degree',
         'confidence' : 'Edge-confidence threshold'}
 
-steinprt = join(ROOT_DIR, 'bin', 'steinprt')
-db = {
-        "geneinfo" : join(_DB_DIR, 'geneinfo', 'Homo_sapiens.gene_info.gz'),
-        "uniprot_mapping" : join(_DB_DIR, 'uniprot',
-            'HUMAN_9606_idmapping.dat.gz'),
-        'uniprot_humsavar' : join(_DB_DIR, 'uniprot', 'humsavar.txt'),
-        'ppi-network' : join(_DB_DIR, 'anat', 'H_sapiens.net'),
-        'go' : {
-            'ontology' : join(_DB_DIR, 'go', 'go-basic.obo'),
-            'annotations' : join(_DB_DIR, 'go', 'gene2go.gz')
-            },
-        'phosphosite' : {
-            'all_sites' : join(_DB_DIR, 'phosphosite',
-                'Phosphorylation_site_dataset.gz'),
-            'disease_associated_sites' : join(_DB_DIR, 'phosphosite',
-                'Disease-associated_sites.csv'),
-            'regulatory_sites' : join(_DB_DIR, 'phosphosite',
-                'Regulatory_sites.csv'),
-            'kinase_substrate_interactions' : join(_DB_DIR, 'phosphosite',
-                'Kinase_Substrate_Dataset.gz')
+def make_defaults(root_dir, work='work', example='example', db='db'):
+    work_dir = join(root_dir, work)
+    example_dir = join(root_dir, example)
+    db_dir = join(root_dir, db)
+    steinprt = join(root_dir, 'bin', 'steinprt')
+    db = { "geneinfo" : join(db_dir, 'geneinfo', 'Homo_sapiens.gene_info.gz'),
+            "uniprot_mapping" : join(db_dir, 'uniprot',
+                'HUMAN_9606_idmapping.dat.gz'),
+            'uniprot_humsavar' : join(db_dir, 'uniprot', 'humsavar.txt'),
+            'ppi-network' : join(db_dir, 'anat', 'H_sapiens.net'),
+            'go' : {
+                'ontology' : join(db_dir, 'go', 'go-basic.obo'),
+                'annotations' : join(db_dir, 'go', 'gene2go.gz')
+                },
+            'phosphosite' : {
+                'all_sites' : join(db_dir, 'phosphosite',
+                    'Phosphorylation_site_dataset.gz'),
+                'disease_associated_sites' : join(db_dir, 'phosphosite',
+                    'Disease-associated_sites.csv'),
+                'regulatory_sites' : join(db_dir, 'phosphosite',
+                    'Regulatory_sites.csv'),
+                'kinase_substrate_interactions' : join(db_dir, 'phosphosite',
+                    'Kinase_Substrate_Dataset.gz')
+                }
             }
-        }
+    return {'root': root_dir, 'work': work_dir, 'example': example_dir, 'db': db, 'steinprt': steinprt}
