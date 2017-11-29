@@ -46,10 +46,13 @@ if __name__ == '__main__':
     mapping = map_from.merge(map_to)
 
     new_geneid_column = 'GeneID {}'.format(species)
-    mapped = (flat_ids.merge(mapping).drop(geneid_column, 1)
-        .groupby('index').apply(lambda x : pd.Series({new_geneid_column: ';'.join(x['EntrezGene ID']), 'HomoloGene ID': ';'.join(x['HomoloGene ID'])})))
-    mapped.columns = pd.MultiIndex.from_tuples([[x] + ['' for _ in data.columns.names[1:]] for x in mapped.columns], names=data.columns.names)
+    mapped = (flat_ids
+            .merge(mapping)
+            .drop(geneid_column, 1)
+            .groupby('index')
+            .apply(lambda x : pd.Series({new_geneid_column: ';'.join(x['EntrezGene ID']), 'HomoloGene ID': ';'.join(x['HomoloGene ID'])})))
+    if isinstance(data.columns, pd.core.index.MultiIndex):
+        mapped.columns = pd.MultiIndex.from_tuples([[x] + ['' for _ in data.columns.names[1:]] for x in mapped.columns], names=data.columns.names)
     if 'HomoloGene ID' in data.columns:
         mapped = mapped.rename(columns={'HomoloGene ID': 'HomoloGene ID_'})
-
     data.join(mapped).to_perseus(args.outfile, main_columns = data_columns)
