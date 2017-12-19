@@ -58,7 +58,6 @@ def run(data_column, confidence_column, name, node_table, edge_table, anchor, pa
     if len(terminal) < 1:
         subnet = None
     else:
-        import pdb; pdb.set_trace()
         print('Querying ANAT for', data_column, flush=True)
         subnet = anat.remote_network('Perseus {} {}'.format(data_column, str(uuid.uuid4())), network_undirected, terminal, anchor = anchor)
     if subnet is None:
