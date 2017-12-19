@@ -213,10 +213,15 @@ def remote_network(sessionId, network_undirected, terminals, anchor=None, **kwar
         submit_response = submit_job_no_anchor(sessionId, network_undirected, terminals, **kwargs)
     else:
         submit_response = submit_job(sessionId, network_undirected, anchor, terminals, **kwargs)
+    retries = 500 # more than half an hour
     got_result = False
-    while not got_result:
+    while not got_result and retries > 0:
         result = ET.fromstring(get_result(sessionId))
         got_result = len(result[0][0]) > 0
         time.sleep(5)
+        retries = retries - 1
+    if retries <= 0:
+        print("Failed to obtain ANAT results. Exceeded retry limit of 500", flush=True)
+        return None
     return parse_result(result)
 

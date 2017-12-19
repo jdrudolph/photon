@@ -56,6 +56,7 @@ def run(data_column, confidence_column, name, node_table, edge_table, anchor, pa
     if len(terminal) < 1:
         subnet = None
     else:
+        import pdb; pdb.set_trace()
         print('Querying ANAT for', data_column, flush=True)
         subnet = anat.remote_network('Perseus {} {}'.format(data_column, str(uuid.uuid4())), network_undirected, terminal, anchor = anchor)
     if subnet is None:
@@ -113,7 +114,10 @@ if __name__ == '__main__':
     networks_table, networks = read_networks(args.infolder)
     for guid in networks_table['GUID']:
         name, node_table, edge_table = [networks[guid][key] for key in ['name', 'node_table', 'edge_table']]
+        # run in parallel
         results = Parallel(n_jobs=args.cpu)(delayed(run)(data_column, confidence_column, name, node_table, edge_table, anchor, parameters) for data_column in data_columns)
+        # run sequentially
+        # results = [run(data_column, confidence_column, name, node_table, edge_table, anchor, parameters) for data_column in data_columns]
         scores, subnets, graphs, terminals = zip(*results)
         # aggregate scores
         score = aggregate_scores(scores)
@@ -128,8 +132,12 @@ if __name__ == '__main__':
         terminal = pd.concat(terminals).rename(columns={'GeneID': 'Node'})
         if len(terminal) > 0:
             terminal['Function'] = 'Terminal'
+        else:
+            terminal = pd.DataFrame({'Node':[], 'Function':[]})
         if len(connector) > 0:
             connector['Function'] = 'Connector'
+        else:
+            connector = pd.DataFrame({'Node':[], 'Function':[]})
         _functions = pd.concat([terminal, connector])
         if anchor is not None:
             _functions = _functions.append(pd.DataFrame({'Node':anchor, 'Column Name':data_columns, 'Function':'Anchor'}))
