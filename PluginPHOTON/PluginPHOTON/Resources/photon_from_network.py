@@ -110,7 +110,7 @@ if __name__ == '__main__':
     networks_table, networks = read_networks(args.infolder)
     for guid in networks_table['GUID']:
         name, node_table, edge_table = [networks[guid][key] for key in ['name', 'node_table', 'edge_table']]
-        if anor is not None and anchor not in set(node_table['Node']):
+        if anchor is not None and anchor not in set(node_table['Node']):
             print("Anchor {} is not contained in network {}".format(anchor, name))
             sys.exit(1)
         # run sequentially
