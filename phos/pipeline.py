@@ -33,6 +33,8 @@ def _run(task_id, data, parameters, db, set_progress=print_progress):
     network = networker.to_directed(network_undirected)
     set_progress('2/5 constructed the network, calculating functionality scores...')
     scores = activity.empiric(exp, network, **parameters['activity'])
+    if len(scores[scores['Significant']]['GeneID']) < 1:
+        raise ValueError('No significant signaling functionality scores found, possibly due to insufficient data.')
     set_progress('3/5 calculated scores, infering subnetwork using ANAT...')
     subnet, go_scores = subnetwork.inference(exp, scores,
             network_undirected, db=db, task_id=task_id, **parameters)
