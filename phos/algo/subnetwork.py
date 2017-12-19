@@ -13,7 +13,7 @@ def inference(exp, scores, network_undirected, anat, go, task_id, db, **kwargs):
     # subnetwork = phos.algo.anat.local_network(network_undirected,
     #    active, exp, task_id=task_id, **anat)
     subnetwork = phos.algo.anat.remote_network(task_id, network_undirected,
-            active, anat.get('anchor', None))
+            active, anat.get('anchor', None)).astype(int)
     if subnetwork is None:
         print("Subnetwork did not contain any edges")
         subnetwork = pd.DataFrame({'s':[-1], 't':['-1']})

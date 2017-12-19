@@ -49,6 +49,8 @@ def run(data_column, confidence_column, name, node_table, edge_table, anchor, pa
         __exp = __exp.drop('avg', 1)
     _exp = __exp.rename(columns = {'Node': 'GeneID', data_column: 'avg'})[['GeneID', 'avg']]
     exp = split_and_stack(_exp, 'avg').dropna()
+    if confidence_column == 'Use constant value':
+        edge_table['Use constant value'] = 1
     network = edge_table.rename(columns = {'Source': 'kin', 'Target': 'sub', confidence_column: 'confidence'})
     score = activity.empiric(exp, network, **parameters['activity']).assign(**{'Column Name': data_column})
     terminal = score[score['Significant']]['GeneID'].astype(str)
@@ -105,19 +107,16 @@ if __name__ == '__main__':
         print("Confidence column was not chosen")
         sys.exit(1)
     anchor = params.stringParam(paramFile, 'Signaling source')
-    if anchor is not None:
-        try:
-            anchor = int(anchor)
-        except ValueError:
-            print("Cannot convert signaling source {} to entrez gene id. Please enter a number, or leave blank".format(anchor))
-            sys.exit(1)
     networks_table, networks = read_networks(args.infolder)
     for guid in networks_table['GUID']:
         name, node_table, edge_table = [networks[guid][key] for key in ['name', 'node_table', 'edge_table']]
-        # run in parallel
-        results = Parallel(n_jobs=args.cpu)(delayed(run)(data_column, confidence_column, name, node_table, edge_table, anchor, parameters) for data_column in data_columns)
+        if anor is not None and anchor not in set(node_table['Node']):
+            print("Anchor {} is not contained in network {}".format(anchor, name))
+            sys.exit(1)
         # run sequentially
         # results = [run(data_column, confidence_column, name, node_table, edge_table, anchor, parameters) for data_column in data_columns]
+        # run in parallel
+        results = Parallel(n_jobs=args.cpu)(delayed(run)(data_column, confidence_column, name, node_table, edge_table, anchor, parameters) for data_column in data_columns)
         scores, subnets, graphs, terminals = zip(*results)
         # aggregate scores
         score = aggregate_scores(scores)

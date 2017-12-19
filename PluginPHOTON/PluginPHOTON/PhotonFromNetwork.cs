@@ -44,10 +44,7 @@ namespace PluginPHOTON
                 return null;
             }
             var edgeTable = network.EdgeTable;
-            if (edgeTable.NumericColumnCount < 0)
-            {
-                errString = "Please add a numeric column with edge confidence to the edge table";
-            }
+            var confidenceColumn = edgeTable.NumericColumnNames.FindIndex(col => col.ToLower().Equals("confidence"));
             return new Parameter[]
             {
                 new MultiChoiceParam("Data columns")
@@ -58,8 +55,9 @@ namespace PluginPHOTON
                 },
                 new SingleChoiceParam("Confidence column")
                 {
-                    Value = Math.Max(0, edgeTable.NumericColumnNames.FindIndex(col => col.ToLower().Equals("confidence"))),
-                    Values = edgeTable.NumericColumnNames
+                    Value = confidenceColumn == -1 ? edgeTable.NumericColumnCount : confidenceColumn,
+                    Values = edgeTable.NumericColumnNames.Concat(new []{"Use constant value"}).ToList(),
+                    Help = "Confidence score for interactions. Will be used as weights in the signaling score calculation"
                 }, 
                 new StringParam("Signaling source")
                 {

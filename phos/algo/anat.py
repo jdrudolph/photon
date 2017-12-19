@@ -188,7 +188,7 @@ def parse_result(result):
                     .append(a.text) for a in x]
     edges = pd.DataFrame(edges)
     try:
-        subnetwork = (edges[['id1', 'id2']].astype(int)
+        subnetwork = (edges[['id1', 'id2']]
             .rename(columns={'id1' : 's', 'id2' : 't'}))
         return subnetwork
     except KeyError:
