@@ -16,27 +16,32 @@ def split_and_stack(frame, colname):
     mapping.name = colname
     return frame.drop(colname, axis=1).join(mapping)
 
-def aggregate_scores(scores):
+def aggregate_scores(scores, additional_columns):
     """Aggregate all scores into one table.
     :param scores: list of pd.DataFrame with scores and additional 'Column Name' column
+    :param additional_columns: include all metrics reported by photon, or just score and significance
     """
     _score = pd.concat(scores)
     score = (_score.pivot_table('score_empiric', 'GeneID', 'Column Name')
             .rename(columns = lambda x: '{} Signaling score'.format(x)))
-    for num_column in ['t', 'p_greater', 'p_lesser', 'p_twosided', 'q_greater', 'q_lesser', 'q_twosided']:
+    num_columns = [] if not additional_columns else ['t',
+            'p_greater', 'p_lesser', 'p_twosided', 'q_greater', 'q_lesser', 'q_twosided']
+    for num_column in num_columns:
         values = (_score
                 .pivot_table(num_column, 'GeneID', 'Column Name')
                 .rename(columns = lambda x : '{} {}'.format(x, num_column))
                 .apply(lambda col: col.astype(float)))
-        result = score.join(values)
-    for cat_column in ['rej_greater', 'rej_lesser', 'rej_twosided', 'Significant']:
+        score = score.join(values)
+    cat_columns = ['Significant'] if not additional_columns else ['rej_greater',
+            'rej_lesser', 'rej_twosided', 'Significant']
+    for cat_column in cat_columns:
         significant = (_score
                 .pivot_table(cat_column, 'GeneID', 'Column Name')
                 .rename(columns = lambda x : '{} {}'.format(x, cat_column))
-                .fillna('Insufficient data')
+                .fillna('')
                 .apply(lambda col: col.astype('category')))
         score = score.join(significant)
-    score = score.reset_index().rename(columns = {"GeneID": "Node"})
+    score = score.reset_index().rename(columns = {'GeneID': 'Node'})
     return score
 
 def run(data_column, confidence_column, name, node_table, edge_table, anchor, parameters):
@@ -55,7 +60,8 @@ def run(data_column, confidence_column, name, node_table, edge_table, anchor, pa
     score = activity.empiric(exp, network, **parameters['activity']).assign(**{'Column Name': data_column})
     terminal = score[score['Significant']]['GeneID'].astype(str)
     network_undirected = network[network['kin'] < network['sub']]
-    if len(terminal) < 1:
+    if len(terminal) + (0 if anchor is None else 1) < 2:
+        print('Cannot create {}anchored network with {} terminals'.format('un' if anchor is None else '', len(terminal)))
         subnet = None
     else:
         print('Querying ANAT for', data_column, flush=True)
@@ -105,6 +111,7 @@ if __name__ == '__main__':
     if type(confidence_column) is int and confidence_column < 0:
         print("Confidence column was not chosen")
         sys.exit(1)
+    additional_columns = params.boolParam(paramFile, 'Additional columns')
     anchor = params.stringParam(paramFile, 'Signaling source')
     networks_table, networks = read_networks(args.infolder)
     for guid in networks_table['GUID']:
@@ -118,7 +125,7 @@ if __name__ == '__main__':
         results = Parallel(n_jobs=args.cpu)(delayed(run)(data_column, confidence_column, name, node_table, edge_table, anchor, parameters) for data_column in data_columns)
         scores, subnets, graphs, terminals = zip(*results)
         # aggregate scores
-        score = aggregate_scores(scores)
+        score = aggregate_scores(scores, additional_columns)
         score.to_perseus(args.signaling_scores, main_columns = ['{} Signaling score'.format(x) for x in data_columns])
         # aggregate networks
         subnetworks_table, subnetworks = nx.to_perseus(graphs)

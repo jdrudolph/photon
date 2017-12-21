@@ -65,6 +65,7 @@ namespace PluginPHOTON
                 }, 
                 new IntParam("Required number of observations", 4) {Help = "Required minumum number of observations for score calculation."},
                 new IntParam("Number of permutations", 1000) {Help = "Number of permutations used for empirical p-value calculation"},
+                new BoolParam("Additional columns", false) {Help = "Score and significance are always reported. Select for additional columns such as one-sided p-values."}
             };
         }
     }
