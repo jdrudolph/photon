@@ -9,7 +9,8 @@ import pandas as pd
 parameters = {
         "activity" : {
             "min_size" : 4,
-            "permutations" : 1000
+            "permutations" : 1000,
+            "side" : "greater"
             },
         "anat" : {
             "alpha" : 0.25,
