@@ -30,21 +30,30 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BaseLib, Version=1.6.0.314, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BaseLib.1.6.0.314\lib\net45\BaseLib.dll</HintPath>
+    <Reference Include="BaseLib, Version=1.6.0.361, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BaseLib.1.6.0.361\lib\net45\BaseLib.dll</HintPath>
     </Reference>
-    <Reference Include="BaseLibS, Version=1.6.0.314, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BaseLibS.1.6.0.314\lib\net45\BaseLibS.dll</HintPath>
+    <Reference Include="BaseLibS, Version=1.6.0.361, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BaseLibS.1.6.0.361\lib\net45\BaseLibS.dll</HintPath>
     </Reference>
-    <Reference Include="PerseusApi, Version=1.6.0.233, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PerseusApi.1.6.0.233\lib\net45\PerseusApi.dll</HintPath>
+    <Reference Include="Microsoft.Windows.Shell, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Windows.Shell.3.0.1.0\lib\net40\Microsoft.Windows.Shell.dll</HintPath>
     </Reference>
-    <Reference Include="PluginInterop, Version=1.6.0.42, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PluginInterop.1.6.0.42\lib\net45\PluginInterop.dll</HintPath>
+    <Reference Include="PerseusApi, Version=1.6.0.296, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PerseusApi.1.6.0.296\lib\net45\PerseusApi.dll</HintPath>
+    </Reference>
+    <Reference Include="PerseusLibS, Version=1.6.0.1571, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PerseusLibS.1.6.0.1571\lib\net45\PerseusLibS.dll</HintPath>
+    </Reference>
+    <Reference Include="PluginInterop, Version=1.6.0.47, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PluginInterop.1.6.0.47\lib\net45\PluginInterop.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />

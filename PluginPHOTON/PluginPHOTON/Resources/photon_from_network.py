@@ -101,7 +101,8 @@ if __name__ == '__main__':
     parameters = {
             'activity' : {
                 'min_size' : params.intParam(paramFile, 'Required number of observations'),
-                'permutations' : params.intParam(paramFile, 'Number of permutations')
+                'permutations' : params.intParam(paramFile, 'Number of permutations'),
+                'side' : params.singleChoiceParam(paramFile, 'Side')
                 }}
     data_columns = params.multiChoiceParam(paramFile, 'Data columns')
     if len(data_columns) < 1:

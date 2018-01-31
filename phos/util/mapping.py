@@ -3,21 +3,23 @@ import os.path
 
 import pandas as pd
 
-def map_protein_groups(data, uniprot, geneid, uniprot_mapping):
+def map_protein_groups(data, uniprot, geneid, uniprot_mapping, astype=int):
     """ turn protein group dataset into gene datset
 
     >>> genes = map_protein_groups(data, 'Uniprot ID', 'GeneID', 'idmapping.dat.gz')
     
     :param data: pandas.DataFrame to be mapped
     :param uniprot: string with the uniprot column name
-    :param geneid: string specifying the target geneid column name
+    :param geneid: string specifying the target geneid column name,
+                    has to correspond to idmapping.dat db name
     :param uniprot_mapping: string with the path to the uniprot id-mapping file
+    :param astype: convert mapped ids to type
     :returns data: mapped"""
-    uni2gid = dict(load_uniprot(uniprot_mapping).values)
+    uni2gid = dict(load_uniprot(uniprot_mapping, geneid).values)
     data[geneid] = data[uniprot].apply(_mapper, args=(uni2gid,))
     data = data.dropna(subset=[geneid])
     data = split_and_stack(data, geneid, ';')
-    data[geneid] = data[geneid].astype(int)
+    data[geneid] = data[geneid].astype(astype)
     return data
 
 def _mapper(unis, uni2gid):
@@ -32,7 +34,7 @@ def _mapper(unis, uni2gid):
 
 
 
-def load_uniprot(filename, force=False):
+def load_uniprot(filename, db='GeneID', force=False):
     """
     read unprot mapping from file. cache uniprot table to save time
     
@@ -40,15 +42,15 @@ def load_uniprot(filename, force=False):
     :param force: force reparsing the file
     :returns uniprot: pandas.DataFrame mapping table
     """
-    cache = filename + '.pkl'
+    cache = '{}_{}_.pkl'.format(filename, db)
     if os.path.isfile(cache) and not force:
         uniprot = pd.read_pickle(cache)
     else: 
-        uniprot = parse_uniprot_mapping(filename)
+        uniprot = parse_uniprot_mapping(filename, db)
         uniprot.to_pickle(cache)
     return uniprot
 
-def parse_uniprot_mapping(filename):
+def parse_uniprot_mapping(filename, db='GeneID'):
     """
     read uniprot mapping from file
     
@@ -56,7 +58,7 @@ def parse_uniprot_mapping(filename):
     """
     raw_data = pd.read_table(filename, compression='gzip',
             names=['Uniprot', 'db', 'dbid'])
-    geneid_data = raw_data[raw_data['db'] == 'GeneID']
+    geneid_data = raw_data[raw_data['db'] == db]
     mapping = pd.pivot_table(geneid_data, 'dbid', index='Uniprot', columns='db',
             aggfunc=lambda x : ';'.join(x)).reset_index()
     return mapping

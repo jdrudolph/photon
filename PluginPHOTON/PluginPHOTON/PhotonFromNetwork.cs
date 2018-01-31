@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -58,6 +59,11 @@ namespace PluginPHOTON
                     Value = confidenceColumn == -1 ? edgeTable.NumericColumnCount : confidenceColumn,
                     Values = edgeTable.NumericColumnNames.Concat(new []{"Use constant value"}).ToList(),
                     Help = "Confidence score for interactions. Will be used as weights in the signaling score calculation"
+                },
+                new SingleChoiceParam("Side")
+                {
+                    Values = new [] {"greater", "twosided", "lesser"},
+                    Help = "Sidedness of the test. Choose 'greater' for proteins with increased signaling functionality."
                 }, 
                 new StringParam("Signaling source")
                 {
