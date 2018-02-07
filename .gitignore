@@ -5,6 +5,8 @@ __pycache__
 
 dist/
 *.egg-info
+*.eggs
+.cache/
 *.svg
 *.png
 *.pdf

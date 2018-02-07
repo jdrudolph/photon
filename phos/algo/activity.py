@@ -69,9 +69,9 @@ def empiric(exp, network, min_size, permutations, side):
     # continuity correction with 1/permutations to avoid log(0) = -Inf
     emp['score_empiric'] = ((mask * -np.log(emp['p_twosided'] + 1/permutations))
             + (~mask * np.log(emp['p_twosided'] + 1/permutations)))
-    if side not in {'greater', 'both', 'lesser'}:
-        raise ValueError(f'side parameters has to be one of "greater", "both", "less", was {side}')
-    emp['Significant'] = emp[f'rej_{side}']
+    if side not in {'greater', 'twosided', 'lesser'}:
+        raise ValueError('side parameters has to be one of "greater", "twosided", "less", was {}'.format(side))
+    emp['Significant'] = emp['rej_{}'.format(side)]
     return (emp.drop(['pos', 'neg'], 1)
             .reset_index()
             .rename(columns={'kin' : 'GeneID'}))
