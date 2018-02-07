@@ -70,7 +70,7 @@ def run(data_column, confidence_column, name, node_table, edge_table, anchor, pa
         subnet = pd.DataFrame({'s': [], 't': [], 'Column Name': []})
         G = nx.Graph()
     else:
-        G = nx.from_pandas_dataframe(subnet, 's', 't', edge_attr=True)
+        G = nx.from_pandas_edgelist(subnet, 's', 't', edge_attr=True)
         subnet['Column Name'] = data_column
     G.graph['Name'] = data_column
     for node in G:
