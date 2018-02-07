@@ -60,7 +60,7 @@ def run(data_column, confidence_column, name, node_table, edge_table, anchor, pa
     score = activity.empiric(exp, network, **parameters['activity']).assign(**{'Column Name': data_column})
     terminal = score[score['Significant']]['GeneID'].astype(str)
     network_undirected = network[network['kin'] < network['sub']]
-    if True or len(terminal) + (0 if anchor is None else 1) < 2:
+    if len(terminal) + (0 if anchor is None else 1) < 2:
         print('Cannot create {}anchored network with {} terminals'.format('un' if anchor is None else '', len(terminal)))
         subnet = None
     else:
