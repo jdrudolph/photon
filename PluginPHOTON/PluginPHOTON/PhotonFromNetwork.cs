@@ -64,11 +64,16 @@ namespace PluginPHOTON
                 {
                     Values = new [] {"greater", "twosided", "lesser"},
                     Help = "Sidedness of the test. Choose 'greater' for proteins with increased signaling functionality."
-                }, 
-                new StringParam("Signaling source")
+                },
+                new BoolWithSubParams("Reconstruct signaling networks with ANAT", false)
                 {
-                    Help = "Has to be a human entrez gene id. Select the starting point of the signaling network (optional)."
-                }, 
+                    Help = "Reconstruct a signaling network that connects all significant proteins. Uses the ANAT web server.",
+                    SubParamsFalse = new Parameters(),
+                    SubParamsTrue = new Parameters(new StringParam("Signaling source")
+                {
+                    Help = "Select the starting point of the signaling network. Leave blank for unrooted network."
+                })
+                },
                 new IntParam("Required number of observations", 4) {Help = "Required minumum number of observations for score calculation."},
                 new IntParam("Number of permutations", 1000) {Help = "Number of permutations used for empirical p-value calculation"},
                 new BoolParam("Additional columns", false) {Help = "Score and significance are always reported. Select for additional columns such as one-sided p-values."}

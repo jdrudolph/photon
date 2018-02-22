@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from statsmodels.stats.multitest import fdrcorrection
+from phos.util import fdrcorrection
 
 def preprocess(exp, network, min_size):
     _kins = (pd.merge(exp, network, left_on='GeneID', right_on='sub')

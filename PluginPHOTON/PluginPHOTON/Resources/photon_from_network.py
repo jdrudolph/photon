@@ -44,7 +44,7 @@ def aggregate_scores(scores, additional_columns):
     score = score.reset_index().rename(columns = {'GeneID': 'Node'})
     return score
 
-def run(data_column, confidence_column, name, node_table, edge_table, anchor, parameters):
+def run(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, parameters):
     print('Calculating scores for', data_column, flush=True)
     if 'GeneID' in node_table.columns:
         __exp = node_table.drop('GeneID', 1)
@@ -60,7 +60,9 @@ def run(data_column, confidence_column, name, node_table, edge_table, anchor, pa
     score = activity.empiric(exp, network, **parameters['activity']).assign(**{'Column Name': data_column})
     terminal = score[score['Significant']]['GeneID'].astype(str)
     network_undirected = network[network['kin'] < network['sub']]
-    if len(terminal) + (0 if anchor is None else 1) < 2:
+    if not run_anat:
+        subnet = None
+    elif len(terminal) + (0 if anchor is None else 1) < 2:
         print('Cannot create {}anchored network with {} terminals'.format('un' if anchor is None else '', len(terminal)))
         subnet = None
     else:
@@ -113,7 +115,8 @@ if __name__ == '__main__':
         print("Confidence column was not chosen")
         sys.exit(1)
     additional_columns = params.boolParam(paramFile, 'Additional columns')
-    anchor = params.stringParam(paramFile, 'Signaling source')
+    run_anat, run_anat_subparam = params.boolWithSubParams(paramFile, 'Reconstruct signaling networks with ANAT')
+    anchor = params.stringParam(run_anat_subparam, 'Signaling source') if run_anat else None
     networks_table, networks = read_networks(args.infolder)
     for guid in networks_table['GUID']:
         name, node_table, edge_table = [networks[guid][key] for key in ['name', 'node_table', 'edge_table']]
@@ -121,12 +124,12 @@ if __name__ == '__main__':
             print("Anchor {} is not contained in network {}".format(anchor, name))
             sys.exit(1)
         # run sequentially
-        # results = [run(data_column, confidence_column, name, node_table, edge_table, anchor, parameters) for data_column in data_columns]
+        # results = [run(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, parameters) for data_column in data_columns]
         # run in parallel
-        results = Parallel(n_jobs=args.cpu)(delayed(run)(data_column, confidence_column, name, node_table, edge_table, anchor, parameters) for data_column in data_columns)
+        results = Parallel(n_jobs=args.cpu)(delayed(run)(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, parameters) for data_column in data_columns)
         scores, subnets, graphs, terminals = zip(*results)
         # aggregate scores
-        score = aggregate_scores(scores, additional_columns)
+        score = aggregate_scores(scores, additional_columns)[data_columns]
         score.to_perseus(args.signaling_scores, main_columns = ['{} Signaling score'.format(x) for x in data_columns])
         # aggregate networks
         subnetworks_table, subnetworks = nx.to_perseus(graphs)
