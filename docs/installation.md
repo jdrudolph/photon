@@ -7,8 +7,9 @@ You have to check one non-default option when installing Python!
 3. Open a console with administrator rights (see FAQ).
 4. Install `perseuspy` and `photon_ptm`
 	
-	pip install perseuspy
-	pip install photon_ptm
+		pip install perseuspy
+		pip install photon_ptm
+
 4. Make sure the installation was successful by opening Perseus and selecting
    the generic Python processing step. The entry for the Python executable
    should be filled-in automatically and the button should be green.
