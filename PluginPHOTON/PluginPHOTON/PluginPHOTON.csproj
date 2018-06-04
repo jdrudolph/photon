@@ -94,8 +94,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetDir)$(TargetFileName) D:\Documents\net\Perseus\bin\$(TargetFileName)
-
-copy $(SolutionDir)..\db\anat\H_sapiens.net D:\Documents\net\Perseus\bin\conf\H_sapiens.net</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
