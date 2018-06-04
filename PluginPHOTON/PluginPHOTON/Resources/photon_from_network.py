@@ -129,7 +129,7 @@ if __name__ == '__main__':
         results = Parallel(n_jobs=args.cpu)(delayed(run)(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, parameters) for data_column in data_columns)
         scores, subnets, graphs, terminals = zip(*results)
         # aggregate scores
-        score = aggregate_scores(scores, additional_columns)[data_columns]
+        score = aggregate_scores(scores, additional_columns)
         score.to_perseus(args.signaling_scores, main_columns = ['{} Signaling score'.format(x) for x in data_columns])
         # aggregate networks
         subnetworks_table, subnetworks = nx.to_perseus(graphs)

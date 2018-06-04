@@ -221,7 +221,7 @@ def remote_network(sessionId, network_undirected, terminals, anchor=None, **kwar
         time.sleep(5)
         retries = retries - 1
     if retries <= 0:
-        print("Failed to obtain ANAT results. Exceeded retry limit of 500", flush=True)
+        print("Failed to obtain ANAT results for {}. Exceeded retry limit of 500".format(sessionId), flush=True)
         return None
     return parse_result(result)
 
