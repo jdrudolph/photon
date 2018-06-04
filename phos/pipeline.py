@@ -26,7 +26,7 @@ def _run(task_id, data, parameters, db, set_progress=print_progress):
 	    raise ValueError('Found {} columns but expected {}. Please check that the input format is correct!'.format(len(exp.columns), len(columns)))
     if not (exp.columns == columns).all():
         raise ValueError('Column names are not {}'.format(columns))
-    if not exp['GeneID'].dtypes == np.int:
+    if not np.issubdtype(exp['GeneID'].dtypes, np.integer):
         raise ValueError('GeneID could not be parsed as integer, make sure the column does not contain "NaN" or ";"')
     set_progress('1/5 read data file, constructing network...')
     network_undirected = networker.load(db=db, **parameters['ppi-network'])

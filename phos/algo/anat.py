@@ -172,9 +172,15 @@ def submit_job(sessionId, network_undirected, anchor, terminals):
             'http://anat.cs.tau.ac.il/AnatWeb/AnatServer',
             headers=headers, data=data)
     if not submit_response.ok:
-        raise ValueError('Response status not OK',
-                '\nRequest', submit_response.request.body,
-                '\nResponse', submit_response.content)
+        import tempfile
+        with tempfile.NamedTemporaryFile(delete=False) as temporary_file:
+            filename = temporary_file.name
+            with open(filename, 'w') as f:
+                print('Request', file=f)
+                print(submit_response.request.body, file=f)
+                print('Response', file=f)
+                print(submit_response.content, file=f)
+        raise ValueError('Response status not OK\nSee request and response in {}'.format(filename))
     return submit_response.text 
 
 def parse_result(result):

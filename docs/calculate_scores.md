@@ -9,8 +9,8 @@ Make sure to follow the [installation instructions](docs/installation.md)
     separating into columns by 'space'.
 
 2. Next we want to filter out low-confidence interactions.
-
     First we have to change to column type of the score column.
+
     **Matrix => Rearrange => Change column types**: Convert `comined_score` from 'Text' to 'Numeric'.
 
 3. We can now filter the edges and observe the changes in number of edges
