@@ -6,6 +6,5 @@ pandas
 redis
 scipy
 seaborn
-statsmodels
 scikit-learn
 requests

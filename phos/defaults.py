@@ -14,7 +14,9 @@ descriptions = {
         'min_size' : 'Required number of observations ($n_0$)',
         'ppi-network' : 'Protein-protein interaction network',
         'degree_threshold' : 'Maximal protein degree',
-        'confidence' : 'Edge-confidence threshold'}
+        'confidence' : 'Edge-confidence threshold',
+        'side' : 'Test sidedness (greater, twosided, lesser)'
+        }
 
 def make_defaults(root_dir, work='work', example='example', db='db'):
     work_dir = join(root_dir, work)

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginPHOTON", "PluginPHOTON\PluginPHOTON.csproj", "{7EBF5229-7402-4448-A52A-FF33E8BD427F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7EBF5229-7402-4448-A52A-FF33E8BD427F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EBF5229-7402-4448-A52A-FF33E8BD427F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EBF5229-7402-4448-A52A-FF33E8BD427F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EBF5229-7402-4448-A52A-FF33E8BD427F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B25855E3-7D60-4F4B-ACD5-24692EDE4331}
+	EndGlobalSection
+EndGlobal

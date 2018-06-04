@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from statsmodels.stats.multitest import fdrcorrection
+from phos.util import fdrcorrection
 
 def preprocess(exp, network, min_size):
     _kins = (pd.merge(exp, network, left_on='GeneID', right_on='sub')
@@ -35,7 +35,7 @@ def run_one_sample_regular_weights(exp, network, beta=0):
     t = mean / (np.power(std, beta) / np.sqrt(n))
     return t.to_frame(name='t')
 
-def empiric(exp, network, min_size, permutations):
+def empiric(exp, network, min_size, permutations, side):
     num_neighbors, fnetwork = preprocess(exp, network, min_size)
     run = run_one_sample_regular_weights
     _exp = exp.reset_index(drop=True)
@@ -55,7 +55,6 @@ def empiric(exp, network, min_size, permutations):
     emp['p_greater'] = emp['pos'] / permutations
     emp['p_lesser'] = emp['neg'] / permutations
     emp['p_twosided'] = emp[['p_greater', 'p_lesser']].min(axis=1)
-    
     rej, q = fdrcorrection(emp['p_greater'].append(emp['p_lesser']))
     n = emp.shape[0]
     emp['rej_greater'] = rej[:n]
@@ -70,7 +69,9 @@ def empiric(exp, network, min_size, permutations):
     # continuity correction with 1/permutations to avoid log(0) = -Inf
     emp['score_empiric'] = ((mask * -np.log(emp['p_twosided'] + 1/permutations))
             + (~mask * np.log(emp['p_twosided'] + 1/permutations)))
-    emp['Significant'] = emp['rej_twosided']
+    if side not in {'greater', 'twosided', 'lesser'}:
+        raise ValueError('side parameters has to be one of "greater", "twosided", "less", was {}'.format(side))
+    emp['Significant'] = emp['rej_{}'.format(side)]
     return (emp.drop(['pos', 'neg'], 1)
             .reset_index()
             .rename(columns={'kin' : 'GeneID'}))

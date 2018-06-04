@@ -1,9 +1,9 @@
 """ utility function for SILAC (log-fold) based datasets """
 import pandas as pd
 import numpy as np
-from statsmodels.stats.multitest import fdrcorrection
 from scipy.stats import ttest_1samp
 import phos.util.mapping as mapping
+from phos.util import fdrcorrection
 
 def threshold(data, fold_changes, t=2, **kwargs):
     return pd.DataFrame(

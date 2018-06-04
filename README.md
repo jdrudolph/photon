@@ -43,13 +43,31 @@ Sometimes PHOTON will not yield any results. Known technical sources of failure 
     Please confirm that the Cytoscape plugin for ANAT is working as expected before reporting an error for PHOTON.
     Please contact me or the authors of ANAT in case of errors.
     
-# Installation
+# Running PHOTON through Perseus
+
+## Installation
+1. Download [Perseus](https://www.ncbi.nlm.nih.gov/pubmed/27348712) from [here](http://www.coxdocs.org/doku.php?id=perseus:common:download_and_installation).
+2. Install [Python](https://www.python.org/downloads/).
+3. Install [perseuspy](https://github.com/jdrudolph/perseuspy) and PHOTON by running `pip install photon_ptm`.
+4. Download `PluginPHOTON` from the [plugin store](http://www.coxdocs.org/doku.php?id=perseus:user:plugins:store).
+
+## Usage
+1. Load the `H_sapiens.txt` file using `Generic matrix upload`.
+2. Filter the rows by `Confidence > 0.5`.
+3. Create a network from the matrix.
+4. Load the experimental data.
+5. Annotate the nodes of the network with the experimental data.
+6. Run PHOTON from Network => Processing => Modifications => PHOTON.
+7. Use the full network for e.g. enrichment analysis. The reconstructed subnetworks can be
+visualized. Signaling functionality scores are reported in a separate table and can be used
+for clustering etc.
+
+# Running PHOTON on Docker
 
 PHOTON runs inside a 'container' and therefore requires docker to run across all platforms.
 General information regarding the installation of docker can be
 found on the docker [website](https://docs.docker.com/engine/installation/).
 
-# Running PHOTON
 
 ## Docker Toolbox (Windows, Mac)
 
