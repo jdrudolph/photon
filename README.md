@@ -8,7 +8,7 @@ Phosphoproteomic experiments typically identify sites within a protein that are 
 
 # Formulas
 
-Please feel free to ask questions on the code and formulas used. [Here](/formulas.ipynb) you can find more detailed information.
+Please feel free to ask questions on the code and formulas used. [Here](docs/formulas.ipynb) you can find more detailed information.
 
 # Output description
 A zip archive containing several output tables can be downloaded from the results page of PHOTON.
