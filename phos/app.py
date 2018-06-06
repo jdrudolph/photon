@@ -65,11 +65,15 @@ def submit():
     filename = os.path.join(TASK_DIR, 'data.tab')
     file.save(filename)
     form = request.form
+    print(form)
     parameters = phos.util.read_json(abspath(join(defaults['root'], 'parameters.json')))
     _parameters = {k:{} for k in parameters.keys()}
     for _k,v in form.items():
         k, kk = _k.split(':')
-        _parameters[k][kk] = phos.util.num(v)
+        if kk == 'side':
+            _parameters[k][kk] = v
+        else:
+            _parameters[k][kk] = phos.util.num(v)
     phos_task.apply_async(args=(task_id, filename, _parameters), task_id=task_id)
     return render_template('submit.html', task_id=task_id)
 

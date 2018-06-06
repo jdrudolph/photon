@@ -10,7 +10,17 @@
       <fieldset>
         <legend>{{ descriptions[k] }}:</legend>
         {% for _k, _v in v.items() %}
-        <div>{{ descriptions[_k] }}: <input required type="number" name={{ k + ':' + _k }} value={{ _v }}></div>
+	{% if _k == "side" %}
+	<div>{{ descriptions[_k] }}:
+		<select name={{ k + ':' + _k}}>
+			<option value="greater">greater</option>
+			<option value="two-sided">twosided</option>
+			<option value="lesser">lesser</option>
+		</select>
+	</div>
+	{% else %}
+	<div>{{ descriptions[_k] }}: <input required type="number" name={{ k + ':' + _k }} value={{ _v }}></div>
+	{% endif %}
         {% endfor %}
       </fieldset>
       {% endfor %}
