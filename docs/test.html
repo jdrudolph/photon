@@ -1,0 +1,43 @@
+<h1 id="signaling-functionality-scores-from-phosphoproteomic-data-photon">Signaling functionality scores from phosphoproteomic data (PHOTON)</h1>
+<p>Make sure to follow the <a href="docs/installation.md">installation instructions</a></p>
+<h2 id="obtaining-a-high-confidence-mouse-protein-protein-interaction-network-from-string">Obtaining a high-confidence mouse protein-protein interaction network from STRING</h2>
+<ol style="list-style-type: decimal">
+<li><p>We start by loading the STRING network table.</p>
+<p>'Matrix =&gt; Load =&gt; Raw upload': Choose file <code>10090.protein.links.v10.5.txt.gz</code> and separating into columns by 'space'.</p></li>
+<li><p>Next we want to filter out low-confidence interactions.</p>
+<p>First we have to change to column type of the score column. 'Matrix =&gt; Rearrange =&gt; Change column types': Convert <code>comined_score</code> from 'Text' to 'Numeric'.</p></li>
+<li><p>We can now filter the edges and observe the changes in number of edges and score distribution by looking at the histogram of the scores before and after filtering.</p>
+<p>'Matrix =&gt; Filter rows =&gt; Filter rows based on numerical/main column': Set <code>x &gt;= 900</code>.</p>
+<p>'Matrix =&gt; Visualization =&gt; Histogram': Select <code>combined_score</code> and set the y-axis to log-scale.</p></li>
+<li><p>As a matter of convenience we can also scale the score to [0, 1] and rename the column to confidence.</p>
+<p>'Matrix =&gt; Basic =&gt; Transform': Select <code>combined_score</code> and <code>x / 1000</code>.</p>
+<p>'Matrix =&gt; Rearrange =&gt; Rename columns': Change <code>combined_score</code> to <code>Confidence</code>.</p></li>
+<li><p>In order to improve compatability of the network with UniProt annotations we will change the format of the protein identifiers and remove the species prefix.</p>
+<p>'Matrix =&gt; Rearrange =&gt; Process text column': Select both columns and set 'Regular expression' to <code>^10090\.(.*)</code>.</p></li>
+<li><p>The resulting edge table provides the template for our network. We will save this intermediate result to file for use in the next step.</p>
+<p>'Matrix =&gt; Export =&gt; Generic matrix export': Save as <code>10090.protein.links.v10.5_high_confidence.txt</code>.</p></li>
+</ol>
+<h2 id="create-the-ppi-network-from-the-edge-table-and-prepare-it-for-data-annotation">Create the PPI network from the edge table and prepare it for data annotation</h2>
+<ol style="list-style-type: decimal">
+<li><p>We start by loading the data table from the previous step.</p>
+<p>'Matrix =&gt; Load =&gt; Generic matrix upload': Choose file <code>10090.protein.links.v10.5_high_confidence.txt</code>.</p></li>
+<li>Now we can transform the matrix into the dedicated 'Network collection' data structure. 'Network =&gt; From matrix =&gt; Basic =&gt; From matrix': Choose <code>protein1</code> and <code>protein2</code> as 'Source' and 'Target'.</li>
+<li>Take your time to browse the different tables of the 'Network collection'.</li>
+<li>We can explore the topology of the network by calculating node degrees (number of neighbors of any given node). 'Network =&gt; Topology =&gt; Node degrees'</li>
+<li>The node degrees were added to the node table of the network. It is easiest to plot them using any of the matrix visualizations in Perseus. We can easily convert network tables to matrices. 'Network =&gt; To matrix =&gt; Basic =&gt; To matrix': Select 'Nodes'.</li>
+<li>When we plot the histogram of node distributions we can see that there are a number nodes with very large degrees. 'Matrix =&gt; Analysis =&gt; Visualization =&gt; Histogram': Select <code>Degree</code> and change the y-axis to log-scale.</li>
+<li>Finding out the identity of the proteins by browsing ensemble protein identifiers is tedious. Instead, we would like to map them to gene names. We can't do so directy, but first have to map ENSP to UniProt identifiers. 'Matrix =&gt; Processing =&gt; Annot. columns =&gt; To base identifiers': Select <code>mainAnnot.mus_musculus.txt.gz</code> and 'Identifier type' as <code>ENSP</code>. 'Matrix =&gt; Processing =&gt; Annot. columns =&gt; Add annotation': Select <code>mainAnnot.mus_musculus.txt.gz</code>, set 'UniProt column' to <code>UniProt</code> and add the <code>Gene name</code> and <code>GOBP name</code> annotation.</li>
+<li><p>Sorting by degree will show you the highest connected proteins in the network. Due to their high connectivity, These proteins can have a dominating effect on network analyses. Therefore, unless these proteins are of interest, removing them from the network collection can be helpful. 'Network =&gt; Processing =&gt; Filter nodes =&gt; Filter nodes by numerical column': Enter <code>x &lt;= 2000</code>.</p></li>
+</ol>
+<h2 id="prepare-the-phospho-data-and-map-it-to-the-network">Prepare the phospho-data and map it to the network</h2>
+<ol style="list-style-type: decimal">
+<li>Upload the provided file. 'Matrix =&gt; Load =&gt; Generic matrix upload': Select <code>humphrey_phosphoSTY.txt</code>.</li>
+<li>Before mapping to the network we need to make sure the data and network are defined in terms of the same identifiers. Here we need to map UniProt to ENSP. 'Matrix =&gt; Processin =&gt; Annot. columns =&gt; Add annotation': Select <code>mainAnnot.mus_musculus.txt.gz</code> and annotate with <code>ENSP</code>.</li>
+<li>Now we can finally map the data to the network. And browse the network and the data simultaneously. 'Network =&gt; Merge with matrix =&gt; Annotate =&gt; Annotate nodes': Match <code>Node</code> with <code>ENSP</code> and copy all main columns. Copied main value should be kept separate.</li>
+</ol>
+<h2 id="perform-the-analysis-and-visualize-the-results">Perform the analysis and visualize the results</h2>
+<ol style="list-style-type: decimal">
+<li>Perform PHOTON analysis to obtain 'Signaling functionality scores' for all proteins in the network. 'Network =&gt; Modifications =&gt; PHOTON': Leave default parameters.</li>
+<li>For convenience the result is listed in different data nodes. The big network collection contains all results of the analysis. The second network collection, empty is this case, contains reconstructed signaling networks, if the box is checked in the previous case. The matrix contains all signaling functionality scores which can be analyzed further, e.g. by clustering 'Matrix =&gt; Processing =&gt; Annot. columns =&gt; To base identifiers': Select <code>mainAnnot.mus_musculus.txt.gz</code> and 'Identifier type' as <code>ENSP</code>. 'Matrix =&gt; Processing =&gt; Annot. columns =&gt; Add annotation': Select <code>mainAnnot.mus_musculus.txt.gz</code>, set 'UniProt column' to <code>UniProt</code> and add the <code>Gene name</code> and <code>GOBP name</code> annotation. 'Matrix =&gt; Analysis =&gt; Hierarchical clustering': The time points will cluster together. You can flip branches of the cluster dendrogram by CTRL+click on the branching points. Can you identify some interesting cluster.</li>
+</ol>
+<p>This covers the basic analysis. The kinase functionality scores can be analyzed in a similar way to protein quantification, i.e. via clustering, statistical testing etc.</p>

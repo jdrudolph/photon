@@ -94,7 +94,8 @@ Make sure to follow the [installation instructions](docs/installation.md)
 3. Now we can finally map the data to the network. And browse the network and the data simultaneously.
 
     **Network => Merge with matrix => Annotate => Annotate nodes**: Match `Node` with `ENSP` and copy
-    all main columns. Copied main value should be kept separate.
+    all main columns. In order to not collapes the peptide-level information of the data to the
+    protein-level network, we set 'Combine copied main values' to `keep separate`.
 
 ## Perform the analysis and visualize the results
 

@@ -41,7 +41,9 @@ namespace PluginPHOTON
             var nodeTable = network.NodeTable;
             if (nodeTable.MultiNumericColumnCount < 1)
             {
-                errString = "Please add a multi numeric column with the data to the node table";
+                errString = "Please add at least one multi numeric column to the node table." +
+                            " Peptide-level information might have been collapsed to protein-level during 'Annotate nodes'." +
+                            " Use 'Combine copied main values' with `keep separate` option to retain peptide-level information.";
                 return null;
             }
             var edgeTable = network.EdgeTable;

@@ -30,23 +30,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BaseLib, Version=1.6.0.361, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BaseLib.1.6.0.361\lib\net45\BaseLib.dll</HintPath>
+    <Reference Include="BaseLib, Version=1.6.0.404, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BaseLib.1.6.0.404\lib\net45\BaseLib.dll</HintPath>
     </Reference>
-    <Reference Include="BaseLibS, Version=1.6.0.361, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BaseLibS.1.6.0.361\lib\net45\BaseLibS.dll</HintPath>
+    <Reference Include="BaseLibS, Version=1.6.0.404, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BaseLibS.1.6.0.404\lib\net45\BaseLibS.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Windows.Shell, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Windows.Shell.3.0.1.0\lib\net40\Microsoft.Windows.Shell.dll</HintPath>
     </Reference>
-    <Reference Include="PerseusApi, Version=1.6.0.296, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PerseusApi.1.6.0.296\lib\net45\PerseusApi.dll</HintPath>
+    <Reference Include="PerseusApi, Version=1.6.0.338, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PerseusApi.1.6.0.338\lib\net45\PerseusApi.dll</HintPath>
     </Reference>
-    <Reference Include="PerseusLibS, Version=1.6.0.1571, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PerseusLibS.1.6.0.1571\lib\net45\PerseusLibS.dll</HintPath>
+    <Reference Include="PerseusLibS, Version=1.6.0.2005, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PerseusLibS.1.6.0.2005\lib\net45\PerseusLibS.dll</HintPath>
     </Reference>
-    <Reference Include="PluginInterop, Version=1.6.0.47, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PluginInterop.1.6.0.47\lib\net45\PluginInterop.dll</HintPath>
+    <Reference Include="PluginInterop, Version=1.6.2.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PluginInterop.1.6.2.6\lib\net45\PluginInterop.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -94,7 +94,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>copy $(TargetDir)$(TargetFileName) D:\Documents\net\Perseus\bin\$(TargetFileName)
+copy $(TargetDir)PluginPHOTON.pdb D:\Documents\net\Perseus\bin\PluginPHOTON.pdb</PostBuildEvent>
   </PropertyGroup>
 </Project>
