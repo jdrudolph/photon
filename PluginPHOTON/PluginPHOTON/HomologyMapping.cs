@@ -1,5 +1,6 @@
 ﻿using BaseLibS.Param;
 using PerseusApi.Matrix;
+using PluginInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,6 +27,12 @@ namespace PluginPHOTON
             return true;
         }
 
+		protected override string GetCommandLineArguments(Parameters param)
+		{
+			var tempFile = Path.GetTempFileName();
+			param.ToFile(tempFile);
+			return tempFile;
+		}
 
         protected override Parameter[] SpecificParameters(IMatrixData mdata, ref string errString)
         {

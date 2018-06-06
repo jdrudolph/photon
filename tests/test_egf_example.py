@@ -52,4 +52,4 @@ def test_tiny_dataset(clean_dir_with_data):
     df.head(100).to_csv('tiny_dataset.csv', index=False)
     with pytest.raises(ValueError) as exc:
         results = phos.pipeline._run(str(uuid.uuid4()), 'tiny_dataset.csv', _parameters, defaults['db'])
-        assert 'No significant signaling functionality scores found' in str(exc.value)
+    assert 'No significant signaling functionality scores found' in str(exc.value)

@@ -9,7 +9,8 @@ def preprocess(exp, network, min_size):
             .apply(len))
     kins = _kins[_kins > min_size]
     filtered_network = network[network['kin'].isin(kins.index)]
-    return kins, filtered_network
+    filtered_exp = exp[exp['GeneID'].isin(filtered_network['sub'])]
+    return kins, filtered_network, filtered_exp
 
 def run_one_sample_regular_weights(exp, network, beta=0):
     """
@@ -36,10 +37,10 @@ def run_one_sample_regular_weights(exp, network, beta=0):
     return t.to_frame(name='t')
 
 def empiric(exp, network, min_size, permutations, side):
-    num_neighbors, fnetwork = preprocess(exp, network, min_size)
+    num_neighbors, filtered_network, filtered_exp = preprocess(exp, network, min_size)
     run = run_one_sample_regular_weights
-    _exp = exp.reset_index(drop=True)
-    emp = run(_exp, fnetwork)
+    _exp = filtered_exp.reset_index(drop=True)
+    emp = run(_exp, filtered_network)
     emp['pos'] = 0
     emp['neg'] = 0
     for _ in range(permutations):
@@ -49,7 +50,7 @@ def empiric(exp, network, min_size, permutations, side):
         if type(rnd) is pd.Series:
             rnd = rnd.to_frame(name='avg')
         rnd['GeneID'] = _exp['GeneID']
-        rnd_act = run(rnd, fnetwork)
+        rnd_act = run(rnd, filtered_network)
         emp['pos'] = emp['pos'] + (emp['t'] < rnd_act['t'])
         emp['neg'] = emp['neg'] + (emp['t'] >= rnd_act['t'])
     emp['p_greater'] = emp['pos'] / permutations

@@ -66,7 +66,7 @@ def run(data_column, confidence_column, name, node_table, edge_table, run_anat, 
         print('Cannot create {}anchored network with {} terminals'.format('un' if anchor is None else '', len(terminal)))
         subnet = None
     else:
-        print('Querying ANAT for', data_column, flush=True)
+        print('Querying ANAT with {} terminals for {}'.format(len(terminal), data_column), flush=True)
         subnet = anat.remote_network('Perseus {} {}'.format(data_column, str(uuid.uuid4())), network_undirected, terminal, anchor = anchor)
     if subnet is None:
         subnet = pd.DataFrame({'s': [], 't': [], 'Column Name': []})

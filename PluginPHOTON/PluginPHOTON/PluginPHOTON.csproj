@@ -45,8 +45,8 @@
     <Reference Include="PerseusLibS, Version=1.6.0.2005, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\PerseusLibS.1.6.0.2005\lib\net45\PerseusLibS.dll</HintPath>
     </Reference>
-    <Reference Include="PluginInterop, Version=1.6.2.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PluginInterop.1.6.2.6\lib\net45\PluginInterop.dll</HintPath>
+    <Reference Include="PluginInterop, Version=1.6.2.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PluginInterop.1.6.2.8\lib\net45\PluginInterop.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -92,6 +92,7 @@
     <PostBuildEvent>if "$(ConfigurationName)" == "Debug" (
 copy $(TargetDir)$(TargetFileName) D:\Documents\net\Perseus\bin\$(TargetFileName) /y
 copy $(TargetDir)PluginPHOTON.pdb D:\Documents\net\Perseus\bin\PluginPHOTON.pdb /y
+copy $(TargetDir)PluginInterop.dll D:\Documents\net\Perseus\bin\PluginInterop.dll /y
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>

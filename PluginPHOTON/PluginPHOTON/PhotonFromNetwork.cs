@@ -8,6 +8,7 @@ using BaseLibS.Graph;
 using BaseLibS.Param;
 using PerseusApi.Generic;
 using PerseusApi.Network;
+using PluginInterop;
 using Path = System.IO.Path;
 
 namespace PluginPHOTON
@@ -30,7 +31,14 @@ namespace PluginPHOTON
             return true;
         }
 
-        protected override Parameter[] SpecificParameters(INetworkData ndata, ref string errString)
+		protected override string GetCommandLineArguments(Parameters param)
+		{
+			var tempFile = Path.GetTempFileName();
+			param.ToFile(tempFile);
+			return tempFile;
+		}
+
+		protected override Parameter[] SpecificParameters(INetworkData ndata, ref string errString)
         {
             if (ndata.Count() != 1)
             {
