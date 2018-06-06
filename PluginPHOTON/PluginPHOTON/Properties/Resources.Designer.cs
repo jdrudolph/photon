@@ -63,16 +63,6 @@ namespace PluginPHOTON.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] calculate_scores {
-            get {
-                object obj = ResourceManager.GetObject("calculate_scores", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] homology_mapping {
             get {
                 object obj = ResourceManager.GetObject("homology_mapping", resourceCulture);
@@ -96,26 +86,6 @@ namespace PluginPHOTON.Properties {
         internal static byte[] photon_from_network {
             get {
                 object obj = ResourceManager.GetObject("photon_from_network", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] pipeline {
-            get {
-                object obj = ResourceManager.GetObject("pipeline", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] reconstruct_network {
-            get {
-                object obj = ResourceManager.GetObject("reconstruct_network", resourceCulture);
                 return ((byte[])(obj));
             }
         }

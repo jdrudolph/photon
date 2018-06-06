@@ -64,28 +64,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PhotonFromNetwork.cs" />
-    <Compile Include="PhotonNetworks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="HomologyMapping.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="HomologyMapping.cs" />
-    <Compile Include="NetworkReconstructionProcessing.cs" />
-    <Compile Include="SignalingScoreProcessing.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\calculate_scores.py" />
     <None Include="Resources\homology_mapping.py" />
     <None Include="Resources\photon_from_network.py" />
-    <None Include="Resources\pipeline.py" />
-    <None Include="Resources\reconstruct_network.py" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
@@ -94,7 +89,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetDir)$(TargetFileName) D:\Documents\net\Perseus\bin\$(TargetFileName)
-copy $(TargetDir)PluginPHOTON.pdb D:\Documents\net\Perseus\bin\PluginPHOTON.pdb</PostBuildEvent>
+    <PostBuildEvent>if "$(ConfigurationName)" == "Debug" (
+copy $(TargetDir)$(TargetFileName) D:\Documents\net\Perseus\bin\$(TargetFileName) /y
+copy $(TargetDir)PluginPHOTON.pdb D:\Documents\net\Perseus\bin\PluginPHOTON.pdb /y
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>

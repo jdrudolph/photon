@@ -118,9 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="calculate_scores" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\calculate_scores.py;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="homology_mapping" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\homology_mapping.py;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -129,11 +126,5 @@
   </data>
   <data name="photon_from_network" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\photon_from_network.py;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="pipeline" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\pipeline.py;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="reconstruct_network" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\reconstruct_network.py;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>
