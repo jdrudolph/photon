@@ -332,3 +332,4 @@ __pycache__/
 # OpenCover UI analysis results
 OpenCover/
 /.cache/v/cache
+/.pytest_cache/v/cache
