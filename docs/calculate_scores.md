@@ -1,6 +1,6 @@
 # Signaling functionality scores from phosphoproteomic data (PHOTON)
 
-Make sure to follow the [installation instructions](docs/installation.md)
+Make sure to follow the [installation instructions](installation.md)
 
 ## Obtaining a high-confidence mouse protein-protein interaction network from STRING
 1. We start by loading the STRING network table.
