@@ -190,13 +190,13 @@ def parse_result(result):
 
 
 def remote_network(sessionId, network_undirected, terminals, anchor=None, **kwargs):
-    network_undirected['kin'] = network_undirected['kin'].str.replace(' ', '_')
-    network_undirected['sub'] = network_undirected['sub'].str.replace(' ', '_')
-    terminals = [t.replace(' ', '_') for t in terminals]
+    network_undirected['kin'] = network_undirected['kin'].astype(str).str.replace(' ', '_')
+    network_undirected['sub'] = network_undirected['sub'].astype(str).str.replace(' ', '_')
+    terminals = [str(t).replace(' ', '_') for t in terminals]
     if anchor is None:
         submit_response = submit_job_no_anchor(sessionId, network_undirected, terminals, **kwargs)
     else:
-        anchor = anchor.replace(' ', '_')
+        anchor = str(anchor).replace(' ', '_')
         submit_response = submit_job(sessionId, network_undirected, anchor, terminals, **kwargs)
     max_retries = 1000 # about one hour
     retries = 0
