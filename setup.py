@@ -19,7 +19,7 @@ setup(name='photon_ptm',
         packages=find_packages(),
         install_requires=[
             'numpy',
-            'pandas>=0.21',
+            'pandas>=0.23',
             'scipy',
             'matplotlib',
             'networkx',
