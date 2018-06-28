@@ -41,18 +41,6 @@ def run_locally(network_undirected, terminals, data, anchor,
     return subnetwork
 
 
-"""
-                  CALLING ANAT SERVER FROM PYTHON EXAMPLE
-
-    import uuid
-    sessionId = str(uuid.uuid4())
-    anchor = 1950
-    terminals = [1120, 112, 1956]
-
-    from anat import network
-    nodes, edges = network(sessionId, anchor, terminals)
-
-"""
 import requests
 import time
 import xml.etree.ElementTree as ET
@@ -201,23 +189,14 @@ def parse_result(result):
         return None
 
 
-def network(sessionId, terminals, anchor=None, **kwargs):
-    if anchor is None:
-        submit_response = submit_job_no_anchor(sessionId, terminals, **kwargs)
-    else:
-        submit_response = submit_job(sessionId, anchor, terminals, **kwargs)
-    got_result = False
-    while not got_result:
-        result = ET.fromstring(get_result(sessionId))
-        got_result = len(result[0][0]) > 0
-        time.sleep(0.5)
-    return parse_result(result)
-
-
 def remote_network(sessionId, network_undirected, terminals, anchor=None, **kwargs):
+    network_undirected['kin'] = network_undirected['kin'].str.replace(' ', '_')
+    network_undirected['sub'] = network_undirected['sub'].str.replace(' ', '_')
+    terminals = [t.replace(' ', '_') for t in terminals]
     if anchor is None:
         submit_response = submit_job_no_anchor(sessionId, network_undirected, terminals, **kwargs)
     else:
+        anchor = anchor.replace(' ', '_')
         submit_response = submit_job(sessionId, network_undirected, anchor, terminals, **kwargs)
     max_retries = 1000 # about one hour
     retries = 0
