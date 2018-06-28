@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys, os, uuid
 from itertools import takewhile
 from perseuspy import pd, nx, write_networks, read_networks
@@ -97,6 +98,8 @@ if __name__ == '__main__':
     parser.add_argument('subnetworks', type=str)
     parser.add_argument('signaling_scores', type=argparse.FileType('w'))
     parser.add_argument('--cpu', type=int, default=max(os.cpu_count() - 1, 1))
+    parser.add_argument('--no-parallel', dest='parallel', action='store_false', help='Disable parallel processing. Helpful for debugging.')
+    parser.set_defaults(parallel=True)
     args = parser.parse_args()
     print('reading parameters', flush=True)
     paramFile = params.parse_parameters(args.paramfile)
@@ -123,10 +126,10 @@ if __name__ == '__main__':
         if anchor is not None and anchor not in set(node_table['Node']):
             print("Anchor {} is not contained in network {}".format(anchor, name))
             sys.exit(1)
-        # run sequentially
-        # results = [run(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, parameters) for data_column in data_columns]
-        # run in parallel
-        results = Parallel(n_jobs=args.cpu)(delayed(run)(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, parameters) for data_column in data_columns)
+        if (args.parallel):
+            results = Parallel(n_jobs=args.cpu)(delayed(run)(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, parameters) for data_column in data_columns)
+        else:
+            results = [run(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, parameters) for data_column in data_columns]
         scores, subnets, graphs, terminals = zip(*results)
         # aggregate scores
         score = aggregate_scores(scores, additional_columns)
