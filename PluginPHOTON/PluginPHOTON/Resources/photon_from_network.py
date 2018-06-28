@@ -58,9 +58,9 @@ def run(data_column, confidence_column, name, node_table, edge_table, run_anat, 
     if confidence_column == 'Use constant value':
         edge_table['Use constant value'] = 1
     network = edge_table.rename(columns = {'Source': 'kin', 'Target': 'sub', confidence_column: 'confidence'})
+    network_undirected = network[network['kin'] < network['sub']] # FIXME this doesn't always work...
     score = activity.empiric(exp, network, **parameters['activity']).assign(**{'Column Name': data_column})
     terminal = score[score['Significant']]['GeneID'].astype(str)
-    network_undirected = network[network['kin'] < network['sub']]
     if not run_anat:
         subnet = None
     elif len(terminal) + (0 if anchor is None else 1) < 2:
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     parser.add_argument('paramfile', type=argparse.FileType('r'))
     parser.add_argument('infolder', type=str)
     parser.add_argument('outfolder', type=str)
-    parser.add_argument('subnetworks', type=str)
+    # FIXME parser.add_argument('subnetworks', type=str)
     parser.add_argument('signaling_scores', type=argparse.FileType('w'))
     parser.add_argument('--cpu', type=int, default=max(os.cpu_count() - 1, 1))
     parser.add_argument('--no-parallel', dest='parallel', action='store_false', help='Disable parallel processing. Helpful for debugging.')
@@ -118,7 +118,9 @@ if __name__ == '__main__':
         print("Confidence column was not chosen")
         sys.exit(1)
     additional_columns = params.boolParam(paramFile, 'Additional columns')
-    run_anat, run_anat_subparam = params.boolWithSubParams(paramFile, 'Reconstruct signaling networks with ANAT')
+    #run_anat, run_anat_subparam = params.boolWithSubParams(paramFile, 'Reconstruct signaling networks with ANAT')
+    run_anat = False # FIXME
+    #top_n_terminals = params.intParam(paramFile, 'Restrict to n top-scoring proteins')
     anchor = params.stringParam(run_anat_subparam, 'Signaling source') if run_anat else None
     networks_table, networks = read_networks(args.infolder)
     for guid in networks_table['GUID']:
@@ -134,9 +136,9 @@ if __name__ == '__main__':
         # aggregate scores
         score = aggregate_scores(scores, additional_columns)
         score.to_perseus(args.signaling_scores, main_columns = ['{} Signaling score'.format(x) for x in data_columns])
-        # aggregate networks
-        subnetworks_table, subnetworks = nx.to_perseus(graphs)
-        write_networks(args.subnetworks, subnetworks_table, subnetworks)
+        # FIXME aggregate networks
+        # subnetworks_table, subnetworks = nx.to_perseus(graphs)
+        # write_networks(args.subnetworks, subnetworks_table, subnetworks)
         subnet = pd.concat(subnets)
         # annotate input network
         connector = pd.concat([subnet[['s', 'Column Name']].rename(columns={'s': 'Node'}),
@@ -150,7 +152,7 @@ if __name__ == '__main__':
             connector['Function'] = 'Connector'
         else:
             connector = pd.DataFrame({'Node':[], 'Function':[]})
-        _functions = pd.concat([terminal, connector])
+        _functions = pd.concat([terminal, connector], sort=True)
         if anchor is not None:
             _functions = _functions.append(pd.DataFrame({'Node':anchor, 'Column Name':data_columns, 'Function':'Anchor'}))
         functions = (_functions.groupby(['Node', 'Column Name'])['Function']

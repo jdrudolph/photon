@@ -1,4 +1,5 @@
 import os
+import uuid
 import subprocess
 
 import pandas as pd
@@ -40,7 +41,51 @@ def run_locally(network_undirected, terminals, data, anchor,
             names=['s', 't', 'confidence', 'transformed', 'directed'])
     return subnetwork
 
+"""
+Using zeep could be great for the future. I don't understand
+why ANAT is not working well with this...
+"""
+def calculateExplanatorySubNetwork(edges, anchors, terminals):
+    import zeep
+    wsdl = "http://anat.cs.tau.ac.il/AnatWeb/AnatServer?wsdl"
+    client = zeep.Client(wsdl=wsdl)
+    edge_data_type = client.get_type('ns0:edgeData')
+    edge_data = [edge_data_type(
+        action = 'SET_DIRECTED',
+        additionalInfo = 'added',
+        confidence = 1.0,
+        fromNodeId = source,
+        toNodeId = target)
+        for source, target in edges]
+    node_data_type = client.get_type('ns0:nodeData')
+    node_data = [node_data_type(
+        operation = 'ADD',
+        nodeId = node)
+        for node in set(y for x in edges for y in x)]
+    session_id = str(uuid.uuid4())
+    bgNetworkEntity = client.get_type('ns0:bgNetworkEntity')
+    return session_id, client.service.calculateExplanatorySubNetwork(
+            algorithmType = "EXPLANATORYPATHWAYS",
+            backGroundNetwork = bgNetworkEntity(
+                edgesData = edge_data,
+                nodesData = node_data),
+            baseNetworkFileName = 'E_empty.net',
+            sessionId = session_id,
+            title = 'a title',
+            lengthPenalty = 25,
+            alpha = 0.25,
+            anchors = anchors,
+            completion = False,
+            predictTF = False,
+            propagate = False,
+            subAlgorithm = 'APPROXIMATE',
+            terminals = terminals,
+            terminalsToAnchors = False)
 
+def get_result_zeep(session_id):
+    network = client.serive.getResult(session_id)
+    edges = pd.DataFrame([(e.id1, e.id2) for e in network['edges']])
+    edges.columns = ['s', 't']
 import requests
 import time
 import xml.etree.ElementTree as ET
@@ -190,13 +235,9 @@ def parse_result(result):
 
 
 def remote_network(sessionId, network_undirected, terminals, anchor=None, **kwargs):
-    network_undirected['kin'] = network_undirected['kin'].astype(str).str.replace(' ', '_')
-    network_undirected['sub'] = network_undirected['sub'].astype(str).str.replace(' ', '_')
-    terminals = [str(t).replace(' ', '_') for t in terminals]
     if anchor is None:
         submit_response = submit_job_no_anchor(sessionId, network_undirected, terminals, **kwargs)
     else:
-        anchor = str(anchor).replace(' ', '_')
         submit_response = submit_job(sessionId, network_undirected, anchor, terminals, **kwargs)
     max_retries = 1000 # about one hour
     retries = 0
