@@ -21,12 +21,8 @@ namespace PluginPHOTON
         public override Bitmap2 DisplayImage => GraphUtils.ToBitmap2(Properties.Resources.icon);
 
         protected override string[] ReqiredPythonPackages => new[] { "perseuspy", "phos", "joblib" };
-		/* TODO enable ANAT
         public override int NumSupplTables => 2;
         public override DataType[] SupplDataTypes => new [] {DataType.Network, DataType.Matrix};
-		*/
-        public override int NumSupplTables => 1;
-        public override DataType[] SupplDataTypes => new [] {DataType.Matrix};
 
         protected override bool TryGetCodeFile(Parameters param, out string codeFile)
         {
@@ -60,16 +56,15 @@ namespace PluginPHOTON
             }
             var edgeTable = network.EdgeTable;
             var confidenceColumn = edgeTable.NumericColumnNames.FindIndex(col => col.ToLower().Equals("confidence"));
-			/* TODO enable ANAT
 	        var signalingSourceParam = new StringParam("Signaling source")
 	        {
-		        Help = "Select the starting point of the signaling network. Leave blank for unrooted network."
+		        Help = "Select the starting point (anchor) of the signaling network. Leave blank for unrooted network. " +
+		               "Has to be a Node from the network."
 	        };
-			var topTerminalsParam = new IntParam("Restrict to n top-scoring proteins", 50)
+			var topTerminalsParam = new IntParam("Restrict terminals to n top-scoring proteins", 100)
 			{
-				Help = "Restrict the size of the network by considering only the n top-scoring proteins."
+				Help = "Restrict the size of the reconstructed network by considering only the n top-scoring proteins."
 			};
-			*/
 	        return new Parameter[]
             {
                 new MultiChoiceParam("Data columns")
@@ -89,14 +84,12 @@ namespace PluginPHOTON
                     Values = new [] {"greater", "twosided", "lesser"},
                     Help = "Sidedness of the test. Choose 'greater' for proteins with increased signaling functionality."
                 },
-				/* TODO enable ANAT
                 new BoolWithSubParams("Reconstruct signaling networks with ANAT", false)
                 {
                     Help = "Reconstruct a signaling network that connects all significant proteins. Uses the ANAT web server.",
                     SubParamsFalse = new Parameters(),
                     SubParamsTrue = new Parameters(signalingSourceParam, topTerminalsParam)
                 },
-				*/
                 new IntParam("Required number of observations", 4) {Help = "Required minumum number of observations for score calculation."},
                 new IntParam("Number of permutations", 1000) {Help = "Number of permutations used for empirical p-value calculation"},
                 new BoolParam("Additional columns", false) {Help = "Score and significance are always reported. Select for additional columns such as one-sided p-values."}

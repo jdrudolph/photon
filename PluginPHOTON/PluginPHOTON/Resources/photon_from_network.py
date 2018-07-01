@@ -45,7 +45,7 @@ def aggregate_scores(scores, additional_columns):
     score = score.reset_index().rename(columns = {'GeneID': 'Node'})
     return score
 
-def run(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, parameters):
+def run(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, top_n_terminals, parameters):
     print('Calculating scores for', data_column, flush=True)
     if 'GeneID' in node_table.columns:
         __exp = node_table.drop('GeneID', 1)
@@ -58,9 +58,8 @@ def run(data_column, confidence_column, name, node_table, edge_table, run_anat, 
     if confidence_column == 'Use constant value':
         edge_table['Use constant value'] = 1
     network = edge_table.rename(columns = {'Source': 'kin', 'Target': 'sub', confidence_column: 'confidence'})
-    network_undirected = network[network['kin'] < network['sub']] # FIXME this doesn't always work...
     score = activity.empiric(exp, network, **parameters['activity']).assign(**{'Column Name': data_column})
-    terminal = score[score['Significant']]['GeneID'].astype(str)
+    terminal = score[score['Significant']].sort_values(by='score_empiric').head(top_n_terminals)['GeneID'].astype(str)
     if not run_anat:
         subnet = None
     elif len(terminal) + (0 if anchor is None else 1) < 2:
@@ -68,7 +67,8 @@ def run(data_column, confidence_column, name, node_table, edge_table, run_anat, 
         subnet = None
     else:
         print('Querying ANAT with {} terminals for {}'.format(len(terminal), data_column), flush=True)
-        subnet = anat.remote_network('Perseus {} {}'.format(data_column, str(uuid.uuid4())), network_undirected, terminal, anchor = anchor)
+        session_id = 'Perseus_{}'.format(str(uuid.uuid4()))
+        subnet = anat.remote_network(session_id, network, terminal, anchor = anchor)
     if subnet is None:
         subnet = pd.DataFrame({'s': [], 't': [], 'Column Name': []})
         G = nx.Graph()
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     parser.add_argument('paramfile', type=argparse.FileType('r'))
     parser.add_argument('infolder', type=str)
     parser.add_argument('outfolder', type=str)
-    # FIXME parser.add_argument('subnetworks', type=str)
+    parser.add_argument('subnetworks', type=str)
     parser.add_argument('signaling_scores', type=argparse.FileType('w'))
     parser.add_argument('--cpu', type=int, default=max(os.cpu_count() - 1, 1))
     parser.add_argument('--no-parallel', dest='parallel', action='store_false', help='Disable parallel processing. Helpful for debugging.')
@@ -118,9 +118,8 @@ if __name__ == '__main__':
         print("Confidence column was not chosen")
         sys.exit(1)
     additional_columns = params.boolParam(paramFile, 'Additional columns')
-    #run_anat, run_anat_subparam = params.boolWithSubParams(paramFile, 'Reconstruct signaling networks with ANAT')
-    run_anat = False # FIXME
-    #top_n_terminals = params.intParam(paramFile, 'Restrict to n top-scoring proteins')
+    run_anat, run_anat_subparam = params.boolWithSubParams(paramFile, 'Reconstruct signaling networks with ANAT')
+    top_n_terminals = params.intParam(paramFile, 'Restrict to n top-scoring proteins')
     anchor = params.stringParam(run_anat_subparam, 'Signaling source') if run_anat else None
     networks_table, networks = read_networks(args.infolder)
     for guid in networks_table['GUID']:
@@ -129,16 +128,20 @@ if __name__ == '__main__':
             print("Anchor {} is not contained in network {}".format(anchor, name))
             sys.exit(1)
         if (args.parallel):
-            results = Parallel(n_jobs=args.cpu)(delayed(run)(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, parameters) for data_column in data_columns)
+            results = Parallel(n_jobs=args.cpu)(delayed(run)(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, top_n_terminals, parameters) for data_column in data_columns)
         else:
-            results = [run(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, parameters) for data_column in data_columns]
+            results = [run(data_column, confidence_column, name, node_table, edge_table, run_anat, anchor, top_n_terminals, parameters) for data_column in data_columns]
         scores, subnets, graphs, terminals = zip(*results)
         # aggregate scores
         score = aggregate_scores(scores, additional_columns)
         score.to_perseus(args.signaling_scores, main_columns = ['{} Signaling score'.format(x) for x in data_columns])
-        # FIXME aggregate networks
-        # subnetworks_table, subnetworks = nx.to_perseus(graphs)
-        # write_networks(args.subnetworks, subnetworks_table, subnetworks)
+        # aggregate networks
+        subnetworks_table, subnetworks = nx.to_perseus(graphs)
+        for sub_guid in subnetworks_table['GUID']:
+            sub_node_table, sub_edge_table = [subnetworks[sub_guid][key] for key in ['node_table', 'edge_table']]
+            subnetworks[sub_guid]['node_table'] = sub_node_table.merge(node_table, on=['Node'])
+            subnetworks[sub_guid]['edge_table'] = sub_edge_table.merge(edge_table, on=['Source', 'Target'])
+        write_networks(args.subnetworks, subnetworks_table, subnetworks)
         subnet = pd.concat(subnets)
         # annotate input network
         connector = pd.concat([subnet[['s', 'Column Name']].rename(columns={'s': 'Node'}),

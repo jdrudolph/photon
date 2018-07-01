@@ -6,6 +6,7 @@ import pandas as pd
 import networkx as nx
 from networkx.readwrite import json_graph
 import json
+import phos.util.network
 
 def run_locally(network_undirected, terminals, data, anchor,
         alpha, task_id, work_dir, viz_out=None, steinprt='steinprt', **kwargs):
@@ -105,18 +106,18 @@ def get_result(sessionID):
                 '\nResponse', result_response.content)
     return result_response.text
 
-def add_edges(network_undirected):
+def add_edges(network):
+    annotated_network = phos.util.network.add_edge_is_directed(network)
     edgesData = ["""       <ns2:edgesData>
-         <ns2:action>SET_UNDIRECTED</ns2:action>
+         <ns2:action>{action}</ns2:action>
          <ns2:additionalInfo>edge</ns2:additionalInfo>
          <ns2:confidence>{confidence}</ns2:confidence>
          <ns2:fromNodeId>{source}</ns2:fromNodeId>
          <ns2:toNodeId>{target}</ns2:toNodeId>
        </ns2:edgesData>""".format(source=source,
-           target=target, confidence=confidence)
-       for (source, target), confidence in
-       zip(network_undirected[['kin', 'sub']].values,
-           network_undirected['confidence'])]
+           target=target, confidence=confidence, action='SET_DIRECTED' if is_directed else 'SET_UNDIRECTED')
+       for source, target, confidence, is_directed in
+       annotated_network[['kin', 'sub', 'confidence', 'is_directed']].values]
     return '\n'.join(edgesData)
     
 def make_terminals(nodes):
@@ -128,8 +129,8 @@ def make_set(nodes):
     return '\n'.join([
         '      <ns2:set>{}</ns2:set>'.format(node) for node in nodes])
 
-def submit_job_no_anchor(sessionId, network_undirected, terminals):
-    edgesData = add_edges(network_undirected)
+def submit_job_no_anchor(sessionId, network, terminals):
+    edgesData = add_edges(network)
     setData = make_set(terminals)
     headers = { 'SOAPAction' : '"calculateProjectionSubNetwork"',
             'charset' : 'utf-8',
@@ -167,8 +168,8 @@ def submit_job_no_anchor(sessionId, network_undirected, terminals):
                 '\nResponse', submit_response.content)
     return submit_response.text 
 
-def submit_job(sessionId, network_undirected, anchor, terminals):
-    edgesData = add_edges(network_undirected)
+def submit_job(sessionId, network, anchor, terminals):
+    edgesData = add_edges(network)
     terminalsData = make_terminals(terminals)
     headers = { 'SOAPAction' : '"calculateExplanatorySubNetwork"',
             'charset' : 'utf-8',
@@ -225,6 +226,8 @@ def parse_result(result):
         if x.tag == '{network}edges':
             [edges.setdefault(a.tag.replace('{network}', ''), [])
                     .append(a.text) for a in x]
+        if x.tag == '{network}errors':
+            raise ValueError('\n'.join([a.text for a in x]))
     edges = pd.DataFrame(edges)
     try:
         subnetwork = (edges[['id1', 'id2']]
@@ -234,11 +237,14 @@ def parse_result(result):
         return None
 
 
-def remote_network(sessionId, network_undirected, terminals, anchor=None, **kwargs):
+def remote_network(sessionId, network, terminals, anchor=None, **kwargs):
+    print("Remote network session id:", sessionId, flush=True)
+    if '/' in sessionId:
+        raise ValueError("sessionId shouldn't contains path separators, such as '/'. Best to keep it simple!")
     if anchor is None:
-        submit_response = submit_job_no_anchor(sessionId, network_undirected, terminals, **kwargs)
+        submit_response = submit_job_no_anchor(sessionId, network, terminals, **kwargs)
     else:
-        submit_response = submit_job(sessionId, network_undirected, anchor, terminals, **kwargs)
+        submit_response = submit_job(sessionId, network, anchor, terminals, **kwargs)
     max_retries = 1000 # about one hour
     retries = 0
     got_result = False
@@ -250,5 +256,8 @@ def remote_network(sessionId, network_undirected, terminals, anchor=None, **kwar
     if retries >= max_retries:
         print("Failed to obtain ANAT results for {}. Exceeded retry limit of {}".format(sessionId, max_retries), flush=True)
         return None
+    for x in result[0][0]:
+        if x.tag == '{network}errors':
+            print("ANAT server returned error:\n", '\n'.join([a.text for a in x]))
     return parse_result(result)
 
