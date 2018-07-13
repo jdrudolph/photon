@@ -119,7 +119,7 @@ if __name__ == '__main__':
         sys.exit(1)
     additional_columns = params.boolParam(paramFile, 'Additional columns')
     run_anat, run_anat_subparam = params.boolWithSubParams(paramFile, 'Reconstruct signaling networks with ANAT')
-    top_n_terminals = params.intParam(paramFile, 'Restrict to n top-scoring proteins')
+    top_n_terminals = params.intParam(paramFile, 'Restrict terminals to n top-scoring proteins') if run_anat else 0
     anchor = params.stringParam(run_anat_subparam, 'Signaling source') if run_anat else None
     networks_table, networks = read_networks(args.infolder)
     for guid in networks_table['GUID']:
