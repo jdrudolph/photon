@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/jdrudolph/photon.svg?branch=master)](https://travis-ci.org/jdrudolph/photon)
 
-PHOTON is available as part of the [Perseus](www.perseus-framework.org) software for proteomics analysis starting from Perseus version 1.6.2.1.
+PHOTON is available as part of the [Perseus](https://www.perseus-framework.org) software for proteomics analysis starting from Perseus version 1.6.2.1.
 
 # Elucidation of Signaling Pathways from Large-Scale Phosphoproteomic Data Using Protein Interaction Networks
 
