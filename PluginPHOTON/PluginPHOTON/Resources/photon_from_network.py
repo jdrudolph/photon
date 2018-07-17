@@ -150,18 +150,20 @@ if __name__ == '__main__':
         if len(terminal) > 0:
             terminal['Function'] = 'Terminal'
         else:
-            terminal = pd.DataFrame({'Node':[], 'Function':[]})
+            terminal = pd.DataFrame({'Node':[], 'Function':[], 'Column Name':[]})
         if len(connector) > 0:
             connector['Function'] = 'Connector'
         else:
-            connector = pd.DataFrame({'Node':[], 'Function':[]})
+            connector = pd.DataFrame({'Node':[], 'Function':[], 'Column Name':[]})
         _functions = pd.concat([terminal, connector], sort=True)
         if anchor is not None:
             _functions = _functions.append(pd.DataFrame({'Node':anchor, 'Column Name':data_columns, 'Function':'Anchor'}))
-        functions = (_functions.groupby(['Node', 'Column Name'])['Function']
-                .unique().str.join(';').unstack().apply(lambda col: col.astype('category'))
-                .rename(columns = lambda col: '{} Function'.format(col)).reset_index())
-        networks[guid]['node_table'] = node_table.merge(score, how='left').merge(functions, how='left')
+        if len(_functions) > 0:
+            functions = (_functions.groupby(['Node', 'Column Name'])['Function']
+                    .unique().str.join(';').unstack().apply(lambda col: col.astype('category'))
+                    .rename(columns = lambda col: '{} Function'.format(col)).reset_index())
+            networks[guid]['node_table'] = node_table.merge(functions, how='left')
+        networks[guid]['node_table'] = node_table.merge(score, how='left')
         if len(subnet) > 0:
             edges = (pd.concat([subnet, subnet.rename({'s':'t', 't':'s'})])
                     .groupby(['s', 't'])['Column Name']
