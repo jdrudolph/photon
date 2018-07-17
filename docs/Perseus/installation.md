@@ -5,9 +5,8 @@ You have to check one non-default option when installing Python!
 1. Download the Python installer from [python.org](https://www.python.org/downloads/).
 2. Check the `Add Python to PATH` option on the very first screen.
 3. Open a console with administrator rights (see FAQ).
-4. Install `perseuspy` and `photon_ptm`
+4. Install `photon_ptm` which will automatically install its dependencies.
 	
-		pip install perseuspy
 		pip install photon_ptm
 
 4. Make sure the installation was successful by opening Perseus and selecting
