@@ -21,7 +21,7 @@ reported phosphorylation fold-changes correspond to stimulated/unstimulated
 condition. 
 
 1. Download the data
-   [here](https://github.com/jdrudolph/photon/docs/Perseus/phophoSTY_rudolph.txt).
+   [here](/docs/Perseus/phosphoSTY_rudolph.txt).
 
 1. Load the file `phosphoSTY_rudolph.txt` (**Matrix => Load => Generic matrix upload**).
 
