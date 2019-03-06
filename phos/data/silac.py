@@ -40,8 +40,8 @@ def experiment(df, fold_changes, uniprot_mapping, geneinfo, **kwargs):
     df = (df.dropna(subset=site_cols)
             .dropna(subset=fold_changes, how='all'))
     df = df.rename(columns={fc : 'fc' for fc in fold_changes})
-    geneid2symbol = pd.read_table(geneinfo, compression='gzip', comment='#',
-            usecols = [1, 2], names=['GeneID', 'Symbol'])
+    geneid2symbol = pd.read_csv(geneinfo, compression='gzip', comment='#',
+            usecols = [1, 2], names=['GeneID', 'Symbol'], sep='\t')
     mapped = (mapping
             .map_protein_groups(df, 'Uniprot', 'GeneID', uniprot_mapping)
             [['GeneID'] + site_cols + ['fc']]

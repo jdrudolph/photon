@@ -17,7 +17,7 @@ def read(path, format, NaN=None, data=None, query=None, cache=None, **kwargs):
 
 def _read(path, format, NaN=None, data=None, query=None, **kwargs):
     if format == 'tsv':
-        raw = pd.read_table(path, **kwargs)
+        raw = pd.read_csv(path, sep='\t', **kwargs)
     elif format == 'xlsx':
         raw = pd.read_excel(path, **kwargs)
     else:

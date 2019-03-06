@@ -13,12 +13,8 @@ def clean_dir_with_data(request):
     copyfile(request.param, os.path.join(newpath, 'data.csv'))
     copytree('static', os.path.join(newpath, 'static'))
     copytree('templates', os.path.join(newpath, 'templates'))
-    if not os.path.isfile('db.tar.gz'):
-        url = 'http://cs.tau.ac.il/~jandanielr/db.tar.gz'
-        print('downloading data')
-        urllib.request.urlretrieve(url, 'db.tar.gz')
-    db_path = os.path.abspath('db.tar.gz')
+    copyfile('db.tar.gz', os.path.join(newpath, 'db.tar.gz'))
     os.chdir(newpath)
-    with tarfile.open(db_path) as uncompressed:
+    with tarfile.open('db.tar.gz') as uncompressed:
             print('extracting data')
             uncompressed.extractall()

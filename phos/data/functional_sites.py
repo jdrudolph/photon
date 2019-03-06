@@ -61,7 +61,7 @@ def uniprot_humsavar(filename):
                 break
             out.write('\t'.join(s.match(line.strip()).groups()) + '\n')
     out.seek(0)
-    return pd.read_table(out, na_values='-')
+    return pd.read_csv(out, na_values='-', sep='\t')
 
 def read_files(db):
     """ return functional sites sources

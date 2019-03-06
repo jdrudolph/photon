@@ -4,7 +4,7 @@ def load(confidence, degree_threshold, db, ppi_network = None):
     """ read the network table from file
     filter for low confidence edges and high-degree nodes """
     ppi_network = db['ppi-network'] if ppi_network is None else ppi_network
-    _anat = pd.read_table(ppi_network,
+    _anat = pd.read_csv(ppi_network, sep='\t',
             names=['kin', 'sub', 'confidence', 'd'])
     anat = _anat[_anat['confidence'] > confidence]
     # Use degree cutoff to remove high-degree nodes
@@ -18,7 +18,7 @@ def load(confidence, degree_threshold, db, ppi_network = None):
 def to_directed(anat):
     """ duplicate undirected edges to form a directed network """
     found_in = ['found_in'] if 'found_in' in anat else []
-    anat_directed = (pd.concat([anat, anat.rename(columns={'kin':'sub', 'sub':'kin'})])
+    anat_directed = (pd.concat([anat, anat.rename(columns={'kin':'sub', 'sub':'kin'})], sort=True)
             .reset_index(drop=True)
             [['kin', 'sub', 'confidence', 'd'] + found_in])
     anat_directed['d'] = 1
@@ -29,7 +29,7 @@ def add_unbiased_confidence(anat, evidence_path):
     
     >>> unbiased = add_unbiased_confidence(anat, 'db/anat/H_sapiens.txt')
     """
-    evidence = pd.read_table(evidence_path)
+    evidence = pd.read_csv(evidence_path, sep='\t')
     SOURCES = {'Y2H' : 'MI:0018'}
     evidence['found_in'] = evidence[list(SOURCES.values())].sum(axis=1)
     return pd.merge(anat, evidence, left_on=['kin', 'sub'],

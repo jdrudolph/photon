@@ -16,7 +16,7 @@ def map_protein_groups(data, uniprot, geneid, uniprot_mapping, astype=int):
     :param astype: convert mapped ids to type
     :returns data: mapped"""
     uni2gid = dict(load_uniprot(uniprot_mapping, geneid).values)
-    data[geneid] = data[uniprot].apply(_mapper, args=(uni2gid,))
+    data[geneid] = data[uniprot].copy().apply(_mapper, args=(uni2gid,))
     data = data.dropna(subset=[geneid])
     data = split_and_stack(data, geneid, ';')
     data[geneid] = data[geneid].astype(astype)
@@ -56,7 +56,7 @@ def parse_uniprot_mapping(filename, db='GeneID'):
     
     :param filename: gzipped uniprot mapping file path HUMAN_9606_idmapping.dat.gz
     """
-    raw_data = pd.read_table(filename, compression='gzip',
+    raw_data = pd.read_csv(filename, compression='gzip', sep='\t',
             names=['Uniprot', 'db', 'dbid'])
     geneid_data = raw_data[raw_data['db'] == db]
     mapping = pd.pivot_table(geneid_data, 'dbid', index='Uniprot', columns='db',

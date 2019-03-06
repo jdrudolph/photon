@@ -35,7 +35,7 @@ def get_sites_per_geneid(uniprot_mapping, all_sites, **kwargs):
     if os.path.isfile(cache):
         mapped_sites = pd.read_pickle(cache)
     else:
-        sites = pd.read_table(all_sites, compression='gzip', skiprows=3)
+        sites = pd.read_csv(all_sites, compression='gzip', skiprows=3, sep='\t')
         human_sites = sites[sites['ORGANISM'] == 'human']
         mapped_sites = mapping.map_protein_groups(human_sites, 'ACC_ID',
                 'GeneID', uniprot_mapping)

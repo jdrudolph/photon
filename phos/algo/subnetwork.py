@@ -45,7 +45,7 @@ def create_graph(exp, scores, network, task_id, db, anchor=None):
     node_attributes = (df.groupby('GeneID')
             .apply(lambda x : [{'AA': a, 'POS': int(p), 'AVG': v, 'NUM': len(x)} for a,p,v in
                 zip(x['Amino.Acid'].values, x['Position'].values, x['avg'].values)]))
-    geneinfo_table = pd.read_table(db['geneinfo'], comment='#', usecols=[1, 2], header=None)
+    geneinfo_table = pd.read_csv(db['geneinfo'], comment='#', usecols=[1, 2], header=None, sep='\t')
     gene_name = dict(geneinfo_table.dropna().values)
     for n in G:
         G.node[n]['residues'] = node_attributes.get(n, [{'NUM' : 0}])

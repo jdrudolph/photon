@@ -18,7 +18,7 @@ def logistic_regression(df, features, N=10):
     """
     X = df[features].values
     y = df['label'].values
-    classifier = LogisticRegression(class_weight='balanced')
+    classifier = LogisticRegression(class_weight='balanced', solver='lbfgs')
     kfold = StratifiedKFold(n_splits=N)
     mean_tpr = 0.0
     mean_fpr = np.linspace(0, 1, 100)

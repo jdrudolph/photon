@@ -38,7 +38,7 @@ def run_locally(network_undirected, terminals, data, anchor,
         '-r', outfile]) # -f flag ignored by steinprt
     with open(outfile + '.log', 'wb') as f:
         f.write(output)
-    subnetwork = pd.read_table(outfile, sep=' ',
+    subnetwork = pd.read_csv(outfile, sep=' ',
             names=['s', 't', 'confidence', 'transformed', 'directed'])
     return subnetwork
 
