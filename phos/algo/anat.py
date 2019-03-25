@@ -125,6 +125,11 @@ def make_terminals(nodes):
         '      <ns2:terminals>{}</ns2:terminals>'.format(node)
         for node in nodes])
 
+def make_anchors(nodes):
+    return '\n'.join([
+        '      <ns2:anchors>{}</ns2:anchors>'.format(node)
+        for node in nodes])
+
 def make_set(nodes):
     return '\n'.join([
         '      <ns2:set>{}</ns2:set>'.format(node) for node in nodes])
@@ -168,8 +173,9 @@ def submit_job_no_anchor(sessionId, network, terminals):
                 '\nResponse', submit_response.content)
     return submit_response.text 
 
-def submit_job(sessionId, network, anchor, terminals):
+def submit_job(sessionId, network, anchors, terminals):
     edgesData = add_edges(network)
+    anchorsData = make_anchors(anchors)
     terminalsData = make_terminals(terminals)
     headers = { 'SOAPAction' : '"calculateExplanatorySubNetwork"',
             'charset' : 'utf-8',
@@ -192,7 +198,7 @@ def submit_job(sessionId, network, anchor, terminals):
           <ns2:margin>0</ns2:margin>
           <ns2:algorithmType>EXPLANATORYPATHWAYS</ns2:algorithmType>
           <ns2:alpha>0.25</ns2:alpha>
-          <ns2:anchors>{anchor}</ns2:anchors>
+          {anchorsData}
           <ns2:predictTF>false</ns2:predictTF>
           <ns2:subAlgorithm>APPROXIMATE</ns2:subAlgorithm>
           {terminalsData}
@@ -201,7 +207,7 @@ def submit_job(sessionId, network, anchor, terminals):
         </S:Body>
       </S:Envelope>
     """.format(edgesData=edgesData, sessionId=sessionId,
-            anchor=anchor, terminalsData=terminalsData)
+            anchorsData=anchorsData, terminalsData=terminalsData)
     submit_response = requests.post(
             'http://anat.cs.tau.ac.il/AnatWeb/AnatServer',
             headers=headers, data=data)
@@ -238,13 +244,24 @@ def parse_result(result):
 
 
 def remote_network(sessionId, network, terminals, anchor=None, **kwargs):
+    """
+    Query ANAT server for network reconstruction
+    :param anchor: The anchor can either be None in which case an unrooted network
+    is generated. A single anchor can be specified as string. Multiple anchors should
+    be specified as a list of strings.
+    """
     print("Remote network session id:", sessionId, flush=True)
     if '/' in sessionId:
         raise ValueError("sessionId shouldn't contains path separators, such as '/'. Best to keep it simple!")
     if anchor is None:
         submit_response = submit_job_no_anchor(sessionId, network, terminals, **kwargs)
     else:
-        submit_response = submit_job(sessionId, network, anchor, terminals, **kwargs)
+        if type(anchor) is list:
+            anchors = anchor
+        else:
+            assert type(anchor) is str
+            anchors = [anchor]
+        submit_response = submit_job(sessionId, network, anchors, terminals, **kwargs)
     max_retries = 1000 # about one hour
     retries = 0
     got_result = False

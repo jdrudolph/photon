@@ -63,6 +63,16 @@ namespace PluginPHOTON.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] anat_from_network {
+            get {
+                object obj = ResourceManager.GetObject("anat_from_network", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] homology_mapping {
             get {
                 object obj = ResourceManager.GetObject("homology_mapping", resourceCulture);
