@@ -104,7 +104,7 @@ if __name__ == '__main__':
         print("Confidence column was not chosen")
         sys.exit(1)
     terminals_column, terminals_column_subparam = params.singleChoiceWithSubParams(paramFile, 'Signaling targets')
-    terminals_values = params.multiChoiceParam(terminals_column_subparam, terminals_column)
+    terminals_values = set(params.multiChoiceParam(terminals_column_subparam, terminals_column))
     anchors = params.stringParam(paramFile, 'Signaling source')
     if anchors is not None:
         anchors = anchors.split()
@@ -120,7 +120,11 @@ if __name__ == '__main__':
                     bad = True
             if bad:
                 sys.exit(1)
-        terminals = list(node_table['Node'][node_table[terminals_column].isin(terminals_values)])
+        terminals = list(node_table['Node'][node_table[terminals_column].astype(str).str.split(';')
+            .apply(lambda cat: any(set(cat) & terminals_values))])
+        if len(terminals) < 1:
+            print("No terminals selected")
+            sys.exit(1)
         network = edge_table.rename(columns = {'Source': 'kin', 'Target': 'sub', confidence_column: 'confidence'})
         session_id = 'Perseus_{}'.format(str(uuid.uuid4()))
         subnet = anat.remote_network(session_id, network, terminals, anchor = anchors)
