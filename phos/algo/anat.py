@@ -259,7 +259,6 @@ def remote_network(sessionId, network, terminals, anchor=None, **kwargs):
         if type(anchor) is list:
             anchors = anchor
         else:
-            assert type(anchor) is str
             anchors = [anchor]
         submit_response = submit_job(sessionId, network, anchors, terminals, **kwargs)
     max_retries = 1000 # about one hour
