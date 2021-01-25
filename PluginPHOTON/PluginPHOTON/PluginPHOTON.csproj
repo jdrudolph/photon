@@ -31,20 +31,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BaseLib, Version=1.6.3.456, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BaseLib.1.6.3.456\lib\net472\BaseLib.dll</HintPath>
+    <Reference Include="BaseLib">
+      <HintPath>DLLs\BaseLib.dll</HintPath>
     </Reference>
-    <Reference Include="BaseLibS, Version=1.6.3.456, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BaseLibS.1.6.3.456\lib\net472\BaseLibS.dll</HintPath>
+    <Reference Include="BaseLibS">
+      <HintPath>DLLs\BaseLibS.dll</HintPath>
     </Reference>
-    <Reference Include="PerseusApi, Version=1.6.3.395, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PerseusApi.1.6.3.395\lib\net472\PerseusApi.dll</HintPath>
+    <Reference Include="PerseusApi">
+      <HintPath>DLLs\PerseusApi.dll</HintPath>
     </Reference>
-    <Reference Include="PluginInterop, Version=1.6.3.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PluginInterop.1.6.3.2\lib\net472\PluginInterop.dll</HintPath>
+    <Reference Include="PluginInterop">
+      <HintPath>DLLs\PluginInterop.dll</HintPath>
     </Reference>
-    <Reference Include="SVG, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SvgNet.1.0.8\lib\net40\SVG.dll</HintPath>
+    <Reference Include="SVG">
+      <HintPath>DLLs\SVG.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -89,10 +89,5 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if "$(ConfigurationName)" == "Debug" (
-copy $(TargetDir)$(TargetFileName) D:\Documents\net\Perseus\bin\$(TargetFileName) /y
-copy $(TargetDir)PluginPHOTON.pdb D:\Documents\net\Perseus\bin\PluginPHOTON.pdb /y
-copy $(TargetDir)PluginInterop.dll D:\Documents\net\Perseus\bin\PluginInterop.dll /y
-)</PostBuildEvent>
   </PropertyGroup>
 </Project>
